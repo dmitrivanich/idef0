@@ -1,0 +1,16 @@
+.container{
+  width: 100vw;
+  height: 100vh;
+  overflow-y:scroll;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container__inner{
+  
+  h1{
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+}
