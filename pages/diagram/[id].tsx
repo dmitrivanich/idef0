@@ -21,7 +21,6 @@ export default function Diagram() {
         setCurrentDiagram(diagram)
     },[diagram])
 
-    console.log(currentDiagram)
     //GESTURE
     const [{ x, y }, api] = useSpring(() => ({ x: 0, y: 0}))
 
@@ -34,7 +33,7 @@ export default function Diagram() {
         currentDiagram && <div className={s.diagramWrapper}>
             <div className={s.content}>
                 <div className={s.tools}>
-                    <button onClick={()=>setIsRedactoring(!isRedactoring)}><p>Редактировать</p></button>
+                    <button onClick={()=>setIsRedactoring(!isRedactoring)}><p>{isRedactoring ? "Отменить" : "Редактировать"}</p></button>
                 </div>
                 {isRedactoring && 
                     <div className={s.form}>
