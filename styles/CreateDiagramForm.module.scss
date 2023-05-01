@@ -1,6 +1,6 @@
 .container{
     width: 100%;
-    height: auto;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -67,6 +67,7 @@
     align-items: center;
     transition: opacity 0.2s ease;
     background: rgb(212, 247, 169);
+    cursor: pointer;
     &:hover{
         opacity: 0.8;
     }

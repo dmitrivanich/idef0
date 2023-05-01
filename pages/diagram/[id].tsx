@@ -7,11 +7,13 @@ import { Diagram } from "@/types";
 //Gesture
 import { useSpring, animated } from '@react-spring/web'
 import { useDrag, usePinch } from '@use-gesture/react'
+import CreateDiagramForm from "@/components/CreateDiagramForm";
 
 export default function Diagram() {
     
     const diagram = useStore(state=>state.currentDiagram)
 
+    const [isRedactoring, setIsRedactoring] = useState(false);
     const [currentLevel, setCurrentLevel] = useState("A1");
     const [currentDiagram,setCurrentDiagram] = useState<Diagram|null>(null)
 
@@ -20,7 +22,6 @@ export default function Diagram() {
     },[diagram])
 
     console.log(currentDiagram)
-
     //GESTURE
     const [{ x, y }, api] = useSpring(() => ({ x: 0, y: 0}))
 
@@ -32,6 +33,19 @@ export default function Diagram() {
     return (
         currentDiagram && <div className={s.diagramWrapper}>
             <div className={s.content}>
+                <div className={s.tools}>
+                    <button onClick={()=>setIsRedactoring(!isRedactoring)}><p>Редактировать</p></button>
+                </div>
+                {isRedactoring && 
+                    <div className={s.form}>
+                        <CreateDiagramForm params={
+                            {
+                                "titleLabel": "Редактирование диаграммы",
+                                "buttonName": "Сохранить изменения",
+                                "currentDiagram": currentDiagram
+                            }} closeForm = {() => setIsRedactoring(false)}/>
+                    </div>
+                }
                 <animated.div className={s.zoom_Field} {...bind()} style={{ x, y, touchAction: 'none' }} >
                     <DiagramBlock/> 
                 </animated.div>

@@ -5,7 +5,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
     min-width: 800px;
     min-height: 500px;
 }
@@ -56,11 +56,11 @@
 
 
 .mechanism, .controller{
-    max-width: 120px;
+    max-height: 100px;
     // word-wrap: normal;
     font-size: 12px;
     
-    writing-mode: vertical-lr;
+    writing-mode: vertical-rl;
     transform: rotate(180deg);
     padding: 5px;
 }

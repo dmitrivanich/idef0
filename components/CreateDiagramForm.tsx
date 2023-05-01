@@ -4,19 +4,25 @@ import { Diagram } from "@/types"
 import Link from "next/link"
 import { useCallback, useEffect,useState, FormEvent, useMemo } from "react"
 
-export default function CreateDiagramForm() {
+interface EditFormParams {
+  titleLabel: string,
+  buttonName: string,
+  currentDiagram: Diagram
+}
+
+export default function CreateDiagramForm({params, closeForm}:{params:EditFormParams | undefined, closeForm: () => void | undefined}) {
   //d_ - сокращение от "диаграма"
   //Локальные стейты инпутов формы
-  const [d_name,setD_Name] = useState('')
-  const [d_input,setD_Input] = useState<string>('')
-  const [d_output,setD_Output] = useState<string>('')
-  const [d_controller,setD_Controller] = useState<string>('')
-  const [d_mechanism,setD_Mechanism] = useState<string>('')
+  const [d_name,setD_Name] = useState(params? params.currentDiagram.name : "")
+  const [d_input,setD_Input] = useState<string>(params? params.currentDiagram.inputs.join(',') : "")
+  const [d_output,setD_Output] = useState<string>(params? params.currentDiagram.outputs.join(',') : "")
+  const [d_controller,setD_Controller] = useState<string>(params? params.currentDiagram.controllers.join(',') : "")
+  const [d_mechanism,setD_Mechanism] = useState<string>(params? params.currentDiagram.mechanisms.join(',') : "")
   //Локальные стейты списков элементов диаграммы
-  const [d_inputs,setD_Inputs] = useState<string[]>([])
-  const [d_outputs,setD_Outputs] = useState<string[]>([])
-  const [d_controllers,setD_Controllers] = useState<string[]>([])
-  const [d_mechanisms,setD_Mechanisms] = useState<string[]>([])
+  const [d_inputs,setD_Inputs] = useState<string[]>(params? params.currentDiagram.inputs : [])
+  const [d_outputs,setD_Outputs] = useState<string[]>(params? params.currentDiagram.outputs : [])
+  const [d_controllers,setD_Controllers] = useState<string[]>(params? params.currentDiagram.controllers : [])
+  const [d_mechanisms,setD_Mechanisms] = useState<string[]>(params? params.currentDiagram.mechanisms : [])
 
   const  setCurrent = useStore(state => state.setCurrent)
 
@@ -35,6 +41,7 @@ export default function CreateDiagramForm() {
   const elements = useCallback((elements:string[]) => elements.map((e,i)=> <div key={i}><p>{e}</p></div>),[d_name,d_input,d_output,d_controller,d_mechanism])
 
   const create = useCallback(()=>{
+    
     let project:Diagram = {
       id: 0,
       name: d_name,
@@ -43,15 +50,17 @@ export default function CreateDiagramForm() {
       controllers: d_controllers,
       mechanisms: d_mechanisms,
     }
+    
     setCurrent(project)
-    console.log(project)
+
+    if(closeForm) closeForm()
   },[d_name,d_input,d_output,d_controller,d_mechanism])
 
   return (
     <div className={s.container}>
       <div className={s.container_inner}>
 
-        <h2  className={s.title}>Создание диаграммы</h2>
+        <h2  className={s.title}>{params? params.titleLabel : "Создание диаграммы"}</h2>
 
         <div className={s.inputElement}>
           <p>Имя: {d_name}</p>
@@ -118,7 +127,7 @@ export default function CreateDiagramForm() {
         
         <Link href={`/diagram/${0}`}>
           <div className={s.createBtn} onClick={create}>
-            <p>Создать</p>
+            <p>{params?.buttonName ? params?.buttonName : "Создать"}</p>
           </div>
         </Link>
       </div>
