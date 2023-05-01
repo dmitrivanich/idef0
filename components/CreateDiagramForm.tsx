@@ -5,12 +5,15 @@ import Link from "next/link"
 import { useCallback, useEffect,useState, FormEvent, useMemo } from "react"
 
 interface EditFormParams {
-  titleLabel: string,
-  buttonName: string,
-  currentDiagram: Diagram
+  params?:{
+    titleLabel: string,
+    buttonName: string,
+    currentDiagram: Diagram
+  } | undefined, 
+  closeForm?: () => void | undefined
 }
 
-export default function CreateDiagramForm({params, closeForm}:{params:EditFormParams | undefined, closeForm: () => void | undefined}) {
+export default function CreateDiagramForm({params = undefined, closeForm = ()=>{}} : EditFormParams) {
   //d_ - сокращение от "диаграма"
   //Локальные стейты инпутов формы
   const [d_name,setD_Name] = useState(params? params.currentDiagram.name : "")
