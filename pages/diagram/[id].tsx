@@ -32,9 +32,11 @@ export default function Diagram() {
     return (
         currentDiagram && <div className={s.diagramWrapper}>
             <div className={s.content}>
+                
                 <div className={s.tools}>
                     <button onClick={()=>setIsRedactoring(!isRedactoring)}><p>{isRedactoring ? "Отменить" : "Редактировать"}</p></button>
                 </div>
+
                 {isRedactoring && 
                     <div className={s.form}>
                         <CreateDiagramForm params={
