@@ -24,6 +24,8 @@ export const DiagramBlock = () => {
                             
                             <Xarrow
                                 start={`mechanism-${currentDiagram.id}-${index}`}
+                                startAnchor="bottom"
+                                endAnchor="top"
                                 end={`diagramBlock-${currentDiagram?.id}`}
                                 color="#353535"
                                 strokeWidth={1}
@@ -42,6 +44,8 @@ export const DiagramBlock = () => {
                             <div className={s.input} id={`input-${currentDiagram.id}-${index}`}>{name}</div>
                             <Xarrow
                                 start={`input-${currentDiagram.id}-${index}`}
+                                startAnchor="right"
+                                endAnchor="left"
                                 end={`diagramBlock-${currentDiagram?.id}`}
                                 color="#353535"
                                 strokeWidth={1}
@@ -63,6 +67,8 @@ export const DiagramBlock = () => {
                             <div className={s.input} id={`output-${currentDiagram.id}-${index}`}>{name}</div>
                             <Xarrow
                                 start={`diagramBlock-${currentDiagram?.id}`}
+                                startAnchor="right"
+                                endAnchor="left"
                                 end={`output-${currentDiagram.id}-${index}`}
                                 color="#353535"
                                 strokeWidth={1}
@@ -82,6 +88,8 @@ export const DiagramBlock = () => {
                             <div className={s.controller}>{name}</div>
                             <Xarrow
                                 start={`controller-${currentDiagram.id}-${index}`}
+                                startAnchor="top"
+                                endAnchor="bottom"
                                 end={`diagramBlock-${currentDiagram?.id}`}
                                 color="#353535"
                                 strokeWidth={1}
