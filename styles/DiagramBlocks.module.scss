@@ -11,22 +11,26 @@
     padding: 10px;
 }
 
-.name{
-    width: 80%;
-    text-align: center;
-    font-weight: 500;
-}
-
 .lineLabel{
-    // position: absolute;
-    // left: 0;
-    // top: 0;
+    padding-left: 7px;
+    width: 20px;
+    height: 60px;
+    
+    p{
+        font-size: 16px;
+        font-weight: 500;
+    }
 }
 
 .top, .bottom{
     display: flex;
     justify-content: space-around;
+    
 }
+.bottom{
+    margin-top: 20px;
+}
+
 
 .center{
     display: flex;
@@ -35,13 +39,18 @@
     width: 100%;
 }
 
-.blocks{
+.blocks {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     grid-template-rows: repeat(auto-fill, minmax(180px, 1fr));
 }
 
-.block {
+.blockA1_container{
+    width: 400px;
+    height: 400px;
+}
+
+.block, .blockA1 {
     border: 3px solid #353535;
     width: 240px;
     height: 180px;
@@ -51,6 +60,24 @@
     position: relative;
     box-shadow: 5px 5px 2px 1px rgba(0, 0, 0, .2);
     margin: 40px;
+
+    .name{
+        width: 80%;
+        text-align: center;
+        font-weight: 500;
+    }
+
+    .id{
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        font-size: 15px;
+    }
+}
+
+.blockA1{
+    width: 320px;
+    height: 240px;
 }
 
 .emptyBlock{
@@ -58,18 +85,10 @@
     height: 180px;
 }
 
-.id{
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    font-size: 15px;
-}
-
 .mechanisms, .controls{
     display: flex;
     justify-content: center;
     align-items: start;
-
 }
 
 .mechanisms{
@@ -93,7 +112,7 @@
 
 .inputs, .outputs{
     width: auto;
-    height: 300px;
+    height: 200px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -110,6 +129,8 @@
     height: 12px;
     
     padding: 10px 5px;
+
+    margin-bottom: 20px;
 }
 .input{
     justify-content: end;

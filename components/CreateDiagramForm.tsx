@@ -15,21 +15,21 @@ interface EditFormParams {
 
 export default function CreateDiagramForm({params = undefined, closeForm = ()=>{}} : EditFormParams) {
 
-  const setCurrent = useStore(state => state.setCurrent)
+  const setCurrentDiagram = useStore(state => state.setCurrentDiagram)
   const [editedDiagram, setEditedDiagram] = useState<Diagram | null>(params? params.currentDiagram : null)
 
   //d_ - обозначает "диаграмма"
   //Локальные стейты для инпутов
   const [d_title,setD_Title] = useState(params? params.currentDiagram.name : "")
-  const [d_input,setD_Input] = useState<string>(params? params.currentDiagram.blocks[0].inputs.join(',') : "")
-  const [d_output,setD_Output] = useState<string>(params? params.currentDiagram.blocks[0].outputs.join(',') : "")
-  const [d_control,setD_Control] = useState<string>(params? params.currentDiagram.blocks[0].controls.join(',') : "")
-  const [d_mechanism,setD_Mechanism] = useState<string>(params? params.currentDiagram.blocks[0].mechanisms.join(',') : "")
+  const [d_input,setD_Input] = useState<string>(params? params.currentDiagram.blocks[0]?.inputs.join(',') : "")
+  const [d_output,setD_Output] = useState<string>(params? params.currentDiagram.blocks[0]?.outputs.join(',') : "")
+  const [d_control,setD_Control] = useState<string>(params? params.currentDiagram.blocks[0]?.controls.join(',') : "")
+  const [d_mechanism,setD_Mechanism] = useState<string>(params? params.currentDiagram.blocks[0]?.mechanisms.join(',') : "")
   //Все входы, выходы, контроллеры, механимы
-  const [d_inputs,setD_Inputs] = useState<string[]>(params? params.currentDiagram.blocks[0].inputs : [])
-  const [d_outputs,setD_Outputs] = useState<string[]>(params? params.currentDiagram.blocks[0].outputs : [])
-  const [d_controls,setD_Controls] = useState<string[]>(params? params.currentDiagram.blocks[0].controls : [])
-  const [d_mechanisms,setD_Mechanisms] = useState<string[]>(params? params.currentDiagram.blocks[0].mechanisms : [])
+  const [d_inputs,setD_Inputs] = useState<string[]>(params? params.currentDiagram.blocks[0]?.inputs : [])
+  const [d_outputs,setD_Outputs] = useState<string[]>(params? params.currentDiagram.blocks[0]?.outputs : [])
+  const [d_controls,setD_Controls] = useState<string[]>(params? params.currentDiagram.blocks[0]?.controls : [])
+  const [d_mechanisms,setD_Mechanisms] = useState<string[]>(params? params.currentDiagram.blocks[0]?.mechanisms : [])
 
   const [num_level, setNum_Level] = useState<number>(0)//Номер уровеня диаграммы
   const [num_subLevel, setNum_subLevel] = useState<number>(1)//Номер под-уровень диаграммы
@@ -39,7 +39,7 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
   },[])
   useEffect(()=>{
     if(editedDiagram && params) {
-      setCurrent(editedDiagram)
+      setCurrentDiagram(editedDiagram)
     }
   },[editedDiagram])
 
@@ -90,6 +90,7 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
 
   //список jsx элементов
   const elements = useCallback((elements:string[]) => {
+    if(!elements) return
     return elements.map((element,i)=> {
       
       return <div key={i}>
@@ -99,6 +100,8 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
   }
   ,[d_title,d_input,d_output,d_control,d_mechanism, num_level, num_subLevel])
 
+
+  //Сохранение изменений
   const saveLevel = useCallback(()=>{
     if(!editedDiagram) return
 
@@ -114,6 +117,7 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
       }
 
       let newBlocks = editedDiagram.blocks
+
       newBlocks.splice(0, 1, headLevel)
 
       const newDiagram = {
@@ -140,12 +144,16 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
       const blocks = editedDiagram.blocks
       let isAdded = false
 
+
+      
+
       const newBlocks = blocks.map((block:Block) => {
         if(block.level === newBlock.level && block.subLevel === newBlock.subLevel){
           isAdded = true
           return newBlock
         } else return block
-      });
+      }).filter(blocks => blocks.title)
+
 
       if(!isAdded) newBlocks.push(newBlock)
 
@@ -170,7 +178,7 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
         mechanisms: d_mechanisms,
       }
 
-      setCurrent({
+      setCurrentDiagram({
         id: 0,
         name: d_title,
         blocks:[A0_Block]

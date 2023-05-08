@@ -36,7 +36,8 @@ export interface Diagram {
 export interface AppState { 
     currentDiagram: Diagram | null
     diagrams: Diagram[],
-    currentLevel: string,
-    setCurrent: (d:Diagram) => void
+    currentLevel: number,
+    setCurrentDiagram: (d:Diagram) => void,
+    setCurrentLevel: (s:number) => void
 }
 

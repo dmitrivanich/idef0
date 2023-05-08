@@ -8,17 +8,25 @@ import { Diagram } from "@/types";
 import { useSpring, animated } from '@react-spring/web'
 import { useDrag, usePinch } from '@use-gesture/react'
 import CreateDiagramForm from "@/components/CreateDiagramForm";
+import { Tree } from "@/components/Tree";
 
 export default function Diagram() {
     
     const diagram = useStore(state=>state.currentDiagram)
-
+    const setCurrentLevel = useStore(state=>state.setCurrentLevel)
     const [isRedactoring, setIsRedactoring] = useState(false);
-    const [currentLevel, setCurrentLevel] = useState("A1");
     const [currentDiagram,setCurrentDiagram] = useState<Diagram|null>(null)
+    const [topLevels, setTopLevels] = useState<number[]>([])
+
+    const [diagramVariant, setDiagramVariant] = useState('idef0')
 
     useEffect(()=>{
         setCurrentDiagram(diagram)
+
+        const uniqLevels: Set<number> = new Set()
+        diagram?.blocks.forEach(block=> uniqLevels.add(block.level))
+
+        setTopLevels(Array.from(uniqLevels))
     },[diagram])
 
     //GESTURE
@@ -29,12 +37,32 @@ export default function Diagram() {
         rubberband: true
     })
 
+    const uniqLevels:number[] = []
+    currentDiagram?.blocks.map(block=> uniqLevels.find(level => block.level === level))
+
     return (
         currentDiagram && <div className={s.diagramWrapper}>
             <div className={s.content}>
                 
                 <div className={s.tools}>
                     <button onClick={()=>setIsRedactoring(!isRedactoring)}><p>{isRedactoring ? "Закрыть" : "Редактировать"}</p></button>
+                    <div>
+                        <label>Уровень:</label>
+                        <select name="level" onChange={(e)=> setCurrentLevel(+e.target.value)}>
+                            {
+                                topLevels.map((level,index)=>{
+                                return <option key={`key-${level}-${index}`}>{level}</option>
+                                })
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label>Вариант диаграммы:</label>
+                        <select value={diagramVariant} name="diagramVariant" onChange={(e)=> setDiagramVariant(e.target.value)}>
+                            <option>idef0</option>
+                            <option>tree</option>
+                        </select>
+                    </div>
                 </div>
 
                 {isRedactoring && 
@@ -47,9 +75,12 @@ export default function Diagram() {
                             }} closeForm = {() => setIsRedactoring(false)}/>
                     </div>
                 }
+
                 <animated.div className={s.zoom_Field} {...bind()} style={{ x, y, touchAction: 'none' }} >
-                    <DiagramBlocks/> 
+                    {diagramVariant === "idef0" && <DiagramBlocks/>}
+                    {diagramVariant === "tree" && <Tree />}
                 </animated.div>
+
             </div>
         </div>
     );

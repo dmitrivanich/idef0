@@ -9,10 +9,11 @@ export const useStore = create<AppState>()(
     devtools(//эта обёртка позволяет работать с плагином redux-devtools
         //persist сохраняет глобальные стейты в localstorage
         persist((set, get) => ({
-            currentLevel: 'A0',
+            currentLevel: 0,
             diagrams: [],
             currentDiagram: null,
-            setCurrent: (d:Diagram) => set({currentDiagram: d})
+            setCurrentDiagram: (d:Diagram) => set({currentDiagram: d}),
+            setCurrentLevel: (s:number) => set({currentLevel: s})
         }),
         {
             name: "app-storage" // name of the key, state will be saved under items

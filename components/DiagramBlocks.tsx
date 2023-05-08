@@ -7,16 +7,13 @@ import { useStore } from '@/store';
 export const DiagramBlocks = () => {
     const blocksRef= useRef(null)
     const diagram = useStore(state=>state.currentDiagram)
-    const [currentLevel, setCurrentLevel] = useState(0)
-    const [currentDiagram, setCurrentDiagram] = useState<Diagram|null>(null)
+    const level = useStore(state=>state.currentLevel)
     const [currentBocks, setCurrentBlocks] = useState<Block[]>([])
     const [connects, setConnects] = useState<{elements: Elements, lines: Line[]} | null>(null)
 
     useEffect(()=>{
         if(!diagram) return
-
-        let blocks = diagram.blocks.filter((block:Block)=> block.level === currentLevel)
-        setCurrentDiagram(diagram)
+        let blocks = diagram.blocks.filter((block:Block)=> block.level === level)
         setCurrentBlocks(blocks)  
 
         let connects = processBlocks(blocks)
@@ -30,7 +27,7 @@ export const DiagramBlocks = () => {
             //@ts-ignore
             blocksRef.current.style.height = (blocks.length * (240)) + "px"
         }
-    },[diagram,blocksRef])
+    },[diagram,level,blocksRef])
 
     return (
         <div className={s.diagram}>
@@ -49,7 +46,7 @@ export const DiagramBlocks = () => {
                                             endAnchor="top"
                                             start={`mechanisms-${element.name}`}
                                             end={`A${target.level}.${target.subLevel}`}
-                                            color="blue"
+                                            color="black"
                                             strokeWidth={2}
                                             gridBreak="30%" 
                                             path="grid"
@@ -64,7 +61,7 @@ export const DiagramBlocks = () => {
                                 endAnchor="top"
                                 start={`mechanisms-${element.name}`}
                                 end={`A${element.target.level}.${element.target.subLevel}`}
-                                color="blue"
+                                color="black"
                                 strokeWidth={2}
                                 gridBreak="30%" 
                                 path="grid"
@@ -85,7 +82,7 @@ export const DiagramBlocks = () => {
                                     startAnchor="right"
                                     endAnchor="left"
                                     end={`A${element.target.level}.${element.target.subLevel}`}
-                                    color="rgb(2,170,90)"
+                                    color="black"
                                     strokeWidth={2}
                                     gridBreak="20%" 
                                     path="grid"
@@ -131,7 +128,7 @@ export const DiagramBlocks = () => {
                                     endAnchor="left"
                                     start={`A${element.target.level}.${element.target.subLevel}`}
                                     end={`A${element.target.level}.${element.target.subLevel}-output-${index}`}
-                                    color="red"
+                                    color="black"
                                     strokeWidth={2}
                                     gridBreak="70%"
                                     path="grid"
@@ -192,11 +189,11 @@ export const DiagramBlocks = () => {
                                 endAnchor="left"
                                 start={`A${line.a.level}.${line.a.subLevel}`}
                                 end={`A${line.b.level}.${line.b.subLevel}`}
-                                color="orange"
+                                color="black"
                                 strokeWidth={2}
-                                gridBreak="10%" 
+                                gridBreak="20px" 
                                 path="grid"
-                                labels={{ start: line.name}}
+                                labels={{ start: <div className={s.lineLabel}><p>{line.name}</p></div>}}
                             />
                         </div>)
                     )
