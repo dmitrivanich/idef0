@@ -13,6 +13,22 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
+
+    background: linear-gradient(
+    rgb(0, 98, 168) 10%,
+    transparent 100%
+    );
+}
+
+
+.zoom_Field{
+    min-width: 2000px;
+    min-height: 2000px;
+    border: 5px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgb(255, 255, 255);
 }
 
 .tools{
@@ -20,7 +36,7 @@
     top: 20px;
     right: 20px;
     z-index: 3;
-
+    
     button{
         display: flex;
         justify-content: center;
@@ -28,8 +44,13 @@
         transition: opacity 0.2s ease;
         background: rgb(212, 247, 169);
         padding: 10px;
-        border: none;
+        border: 3px solid black;
         cursor: pointer;
+
+        p{
+            font-weight: 600;
+        }
+        
 
         &:hover{
             opacity: 0.8;
@@ -49,13 +70,4 @@
     left: 0;
     top: 0;
     background: rgba($color: #0f0543, $alpha: 0.5);
-}
-
-.zoom_Field{
-    min-width: 2000px;
-    min-height: 2000px;
-    border: 5px solid black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }

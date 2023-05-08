@@ -1,6 +1,6 @@
-import { useStore } from "@/store"
 import s from "@/styles/CreateDiagramForm.module.scss"
-import { Diagram } from "@/types"
+import { useStore } from "@/store"
+import { Block, Diagram} from "@/types"
 import Link from "next/link"
 import { useCallback, useEffect,useState, FormEvent, useMemo } from "react"
 
@@ -9,26 +9,73 @@ interface EditFormParams {
     titleLabel: string,
     buttonName: string,
     currentDiagram: Diagram
-  } | undefined, 
+  }, 
   closeForm?: () => void | undefined
 }
 
 export default function CreateDiagramForm({params = undefined, closeForm = ()=>{}} : EditFormParams) {
-  //d_ - сокращение от "диаграма"
-  //Локальные стейты инпутов формы
-  const [d_name,setD_Name] = useState(params? params.currentDiagram.name : "")
-  const [d_input,setD_Input] = useState<string>(params? params.currentDiagram.inputs.join(',') : "")
-  const [d_output,setD_Output] = useState<string>(params? params.currentDiagram.outputs.join(',') : "")
-  const [d_controller,setD_Controller] = useState<string>(params? params.currentDiagram.controllers.join(',') : "")
-  const [d_mechanism,setD_Mechanism] = useState<string>(params? params.currentDiagram.mechanisms.join(',') : "")
-  //Локальные стейты списков элементов диаграммы
-  const [d_inputs,setD_Inputs] = useState<string[]>(params? params.currentDiagram.inputs : [])
-  const [d_outputs,setD_Outputs] = useState<string[]>(params? params.currentDiagram.outputs : [])
-  const [d_controllers,setD_Controllers] = useState<string[]>(params? params.currentDiagram.controllers : [])
-  const [d_mechanisms,setD_Mechanisms] = useState<string[]>(params? params.currentDiagram.mechanisms : [])
 
-  const  setCurrent = useStore(state => state.setCurrent)
+  const setCurrent = useStore(state => state.setCurrent)
+  const [editedDiagram, setEditedDiagram] = useState<Diagram | null>(params? params.currentDiagram : null)
 
+  //d_ - обозначает "диаграмма"
+  //Локальные стейты для инпутов
+  const [d_title,setD_Title] = useState(params? params.currentDiagram.name : "")
+  const [d_input,setD_Input] = useState<string>(params? params.currentDiagram.blocks[0].inputs.join(',') : "")
+  const [d_output,setD_Output] = useState<string>(params? params.currentDiagram.blocks[0].outputs.join(',') : "")
+  const [d_control,setD_Control] = useState<string>(params? params.currentDiagram.blocks[0].controls.join(',') : "")
+  const [d_mechanism,setD_Mechanism] = useState<string>(params? params.currentDiagram.blocks[0].mechanisms.join(',') : "")
+  //Все входы, выходы, контроллеры, механимы
+  const [d_inputs,setD_Inputs] = useState<string[]>(params? params.currentDiagram.blocks[0].inputs : [])
+  const [d_outputs,setD_Outputs] = useState<string[]>(params? params.currentDiagram.blocks[0].outputs : [])
+  const [d_controls,setD_Controls] = useState<string[]>(params? params.currentDiagram.blocks[0].controls : [])
+  const [d_mechanisms,setD_Mechanisms] = useState<string[]>(params? params.currentDiagram.blocks[0].mechanisms : [])
+
+  const [num_level, setNum_Level] = useState<number>(0)//Номер уровеня диаграммы
+  const [num_subLevel, setNum_subLevel] = useState<number>(1)//Номер под-уровень диаграммы
+
+  useEffect(()=>{
+    params && setEditedDiagram(params.currentDiagram)
+  },[])
+  useEffect(()=>{
+    if(editedDiagram && params) {
+      setCurrent(editedDiagram)
+    }
+  },[editedDiagram])
+
+  useEffect(()=>{//при смене уровня
+    if(!params || !editedDiagram || !editedDiagram.blocks[0]) return
+
+    if(num_level === 0){
+      const block = editedDiagram.blocks[0]
+
+      setD_Title(block.title);
+      setD_Input(block.inputs.join(',')); setD_Inputs(block.inputs);
+      setD_Output(block.outputs.join(',')); setD_Outputs(block.outputs);
+      setD_Mechanism(block.mechanisms.join(',')); setD_Mechanisms(block.mechanisms);
+      setD_Control(block.controls.join(',')); setD_Controls(block.controls);
+      return
+    }
+
+    if(num_level > 0){
+      const block = editedDiagram.blocks.find(block => block.level === num_level && block.subLevel === num_subLevel)
+
+      if(block) {
+        setD_Title(block.title);
+        setD_Input(block.inputs.join(',')); setD_Inputs(block.inputs);
+        setD_Output(block.outputs.join(',')); setD_Outputs(block.outputs);
+        setD_Mechanism(block.mechanisms.join(',')); setD_Mechanisms(block.mechanisms);
+        setD_Control(block.controls.join(',')); setD_Controls(block.controls);
+      } else {
+        setD_Title("");
+        setD_Input(""); setD_Inputs([]);
+        setD_Output(""); setD_Outputs([]);
+        setD_Mechanism(""); setD_Mechanisms([]);
+        setD_Control(""); setD_Controls([]);
+      }
+    }
+
+  },[num_level, num_subLevel, editedDiagram])
 
   //Добавляет значение стейта в стейт со списком элементов и очищает стейт
   const addElement = useCallback((str:string, elementStateAction:(s:string)=>void,elementsStateAction:(s:string[])=>void)=>{
@@ -39,37 +86,127 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
       elementStateAction('')
     }
     elementsStateAction(elementWithoutSpaces)
-  },[d_name,d_input,d_output,d_controller,d_mechanism])
+  },[d_title,d_input,d_output,d_control,d_mechanism, num_level, num_subLevel])
 
-  const elements = useCallback((elements:string[]) => elements.map((e,i)=> <div key={i}><p>{e}</p></div>),[d_name,d_input,d_output,d_controller,d_mechanism])
+  //список jsx элементов
+  const elements = useCallback((elements:string[]) => {
+    return elements.map((element,i)=> {
+      
+      return <div key={i}>
+        <p>{element}</p>
+      </div>
+    })
+  }
+  ,[d_title,d_input,d_output,d_control,d_mechanism, num_level, num_subLevel])
 
-  const create = useCallback(()=>{
-    
-    let project:Diagram = {
-      id: 0,
-      name: d_name,
-      inputs: d_inputs,
-      outputs: d_outputs,
-      controllers: d_controllers,
-      mechanisms: d_mechanisms,
+  const saveLevel = useCallback(()=>{
+    if(!editedDiagram) return
+
+    if(num_level === 0){
+      const headLevel = {
+        title: d_title,
+        level: 0,
+        subLevel: 0,
+        inputs: d_inputs,
+        outputs: d_outputs,
+        controls: d_controls,
+        mechanisms: d_mechanisms,
+      }
+
+      let newBlocks = editedDiagram.blocks
+      newBlocks.splice(0, 1, headLevel)
+
+      const newDiagram = {
+        id: 0,
+        name: editedDiagram.blocks[0].title,
+        blocks: newBlocks
+      }
+
+      setEditedDiagram(newDiagram)
+
+      return
+    }else{
+      const newBlock:Block = {
+        level: num_level,
+        subLevel: num_subLevel,
+        title: d_title,
+        inputs: d_inputs,
+        outputs: d_outputs,
+        controls: d_controls,
+        mechanisms: d_mechanisms,
+      }
+  
+      //Добавление/перезапись нового блока
+      const blocks = editedDiagram.blocks
+      let isAdded = false
+
+      const newBlocks = blocks.map((block:Block) => {
+        if(block.level === newBlock.level && block.subLevel === newBlock.subLevel){
+          isAdded = true
+          return newBlock
+        } else return block
+      });
+
+      if(!isAdded) newBlocks.push(newBlock)
+
+      setEditedDiagram({
+        ...editedDiagram,
+        blocks: newBlocks
+      })
     }
-    
-    setCurrent(project)
+   
+  },[d_title,d_input,d_output,d_control,d_mechanism,num_level, num_subLevel])
 
-    if(closeForm) closeForm()
-  },[d_name,d_input,d_output,d_controller,d_mechanism])
+  //создание диаграммы
+  const create = useCallback(()=>{
+    if(!params){
+      const A0_Block = {
+        title: d_title,
+        level: num_level,
+        subLevel: 0,
+        inputs: d_inputs,
+        outputs: d_outputs,
+        controls: d_controls,
+        mechanisms: d_mechanisms,
+      }
+
+      setCurrent({
+        id: 0,
+        name: d_title,
+        blocks:[A0_Block]
+      })
+    }
+    // if(closeForm) closeForm() - закрыть форму
+  },[d_title,d_input,d_output,d_control,d_mechanism])
 
   return (
     <div className={s.container}>
       <div className={s.container_inner}>
 
         <h2  className={s.title}>{params? params.titleLabel : "Создание диаграммы"}</h2>
+        
+        {params && 
+          <div className={s.level}> 
+            <p>Уровень: A{num_level}{num_level > 0 && num_subLevel > 0 && "." + num_subLevel}</p>
+            <input min={0} type="number" name="level" value={num_level} onChange={(e:FormEvent<HTMLInputElement>)=>setNum_Level(+e.currentTarget.value)}></input>
+            {num_level > 0 && 
+              <input min={1} type="number" name="subLevel" value={num_subLevel} onChange={(e:FormEvent<HTMLInputElement>)=>setNum_subLevel(+e.currentTarget.value)}></input>
+            }
+          </div>
+        }
 
         <div className={s.inputElement}>
-          <p>Имя: {d_name}</p>
-          <input type="text" name="name" placeholder="Имя диаграммы..." value={d_name} onChange={(e:FormEvent<HTMLInputElement>)=>setD_Name(e.currentTarget.value)}></input>
-        </div>
-         
+          <p>Имя: {d_title}</p>
+          <input type="text"
+          name="name"
+          placeholder="Имя диаграммы..."
+          value={d_title} 
+          onChange={(e:FormEvent<HTMLInputElement>)=>{
+            setD_Title(e.currentTarget.value)
+          }}
+          ></input>
+        </div> 
+
         <div className={s.inputElement}>
           <div>
             <p>Входы:</p>
@@ -83,7 +220,7 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
           }
           }></input>
         </div>
-
+        
         <div className={s.inputElement}>
           <div>
             <p>Выходы:</p>
@@ -92,25 +229,24 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
           <input type="text" name="output" value={d_output}
             placeholder="Первый, Второй, Третий..."
             onChange={(e:FormEvent<HTMLInputElement>)=>{
-            setD_Output(e.currentTarget.value)
-            addElement(e.currentTarget.value, setD_Output,setD_Outputs)
-          }
-          }></input>
+              setD_Output(e.currentTarget.value)
+              addElement(e.currentTarget.value, setD_Output,setD_Outputs)
+          }}/>
         </div>
         
         
         <div className={s.inputElement}>
           <div>
             <p>Контроллеры:</p>
-            <div className={s.elements}>{elements(d_controllers)}</div>
+            <div className={s.elements}>{elements(d_controls)}</div>
           </div>
-          <input type="text" name="controllers" value={d_controller}
+          <input type="text" name="controls" value={d_control}
             placeholder="Первый, Второй, Третий..."
             onChange={(e:FormEvent<HTMLInputElement>)=>{
-            setD_Controller(e.currentTarget.value)
-            addElement(e.currentTarget.value, setD_Controller, setD_Controllers)
+              setD_Control(e.currentTarget.value)
+              addElement(e.currentTarget.value, setD_Control, setD_Controls)
           }
-          }></input>
+          }/>
         </div>
 
         <div className={s.inputElement}>
@@ -121,18 +257,22 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
           <input type="text" name="mechanisms" value={d_mechanism}
             placeholder="Первый, Второй, Третий..."
             onChange={(e:FormEvent<HTMLInputElement>)=>{
-            setD_Mechanism(e.currentTarget.value)
-            addElement(e.currentTarget.value, setD_Mechanism, setD_Mechanisms)
+              setD_Mechanism(e.currentTarget.value)
+              addElement(e.currentTarget.value, setD_Mechanism, setD_Mechanisms)
           }
-          }></input>
+          }/>
         </div>
 
-        
-        <Link href={`/diagram/${0}`}>
+        {params && <div className={s.createBtn} onClick={saveLevel}>
+            <p>{params.buttonName}</p>
+        </div>}
+
+        {!params &&<Link href={`/diagram/${0}`}>
           <div className={s.createBtn} onClick={create}>
-            <p>{params?.buttonName ? params?.buttonName : "Создать"}</p>
+             <p>Создать</p>
           </div>
-        </Link>
+        </Link>}
+          
       </div>
     </div>
   )

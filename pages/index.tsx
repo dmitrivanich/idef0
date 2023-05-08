@@ -7,6 +7,7 @@ import { useStore } from "@/store";
 export default function Home() {
     return (
       <div className={s.container}>
+          
           <CreateProjectForm />
       </div>
     );

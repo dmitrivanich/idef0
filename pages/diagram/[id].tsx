@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import s from "@/styles/Diagram.module.scss";
-import { DiagramBlock } from "@/components/DiagramBlock";
+import { DiagramBlocks } from "@/components/DiagramBlocks";
 import { useStore } from "@/store";
 import { Diagram } from "@/types";
 
@@ -34,7 +34,7 @@ export default function Diagram() {
             <div className={s.content}>
                 
                 <div className={s.tools}>
-                    <button onClick={()=>setIsRedactoring(!isRedactoring)}><p>{isRedactoring ? "Отменить" : "Редактировать"}</p></button>
+                    <button onClick={()=>setIsRedactoring(!isRedactoring)}><p>{isRedactoring ? "Закрыть" : "Редактировать"}</p></button>
                 </div>
 
                 {isRedactoring && 
@@ -48,7 +48,7 @@ export default function Diagram() {
                     </div>
                 }
                 <animated.div className={s.zoom_Field} {...bind()} style={{ x, y, touchAction: 'none' }} >
-                    <DiagramBlock/> 
+                    <DiagramBlocks/> 
                 </animated.div>
             </div>
         </div>

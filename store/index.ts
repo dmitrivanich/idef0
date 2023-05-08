@@ -8,14 +8,14 @@ import { devtools, persist } from 'zustand/middleware'
 export const useStore = create<AppState>()(
     devtools(//эта обёртка позволяет работать с плагином redux-devtools
         //persist сохраняет глобальные стейты в localstorage
-        persist((set,get) => ({
+        persist((set, get) => ({
             currentLevel: 'A0',
             diagrams: [],
             currentDiagram: null,
             setCurrent: (d:Diagram) => set({currentDiagram: d})
         }),
         {
-        name: "app-storage" // name of the key, state will be saved under items
+            name: "app-storage" // name of the key, state will be saved under items
         })
     )
 )
