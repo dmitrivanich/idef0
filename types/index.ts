@@ -28,16 +28,17 @@ export interface Block{
 }
 
 export interface Diagram {
-    id: number,
+    id: string,
     name: string,
     blocks: Block[]
 }
 
 export interface AppState { 
-    currentDiagram: Diagram | null
     diagrams: Diagram[],
     currentLevel: number,
-    setCurrentDiagram: (d:Diagram) => void,
-    setCurrentLevel: (s:number) => void
+    saveDiagram: (d:Diagram) => void,
+    removeDiagram: (d:Diagram) => void,
+    setCurrentLevel: (s:number) => void,
 }
+
 

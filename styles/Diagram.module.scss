@@ -49,7 +49,7 @@
         margin-top: 20px;    
     }
 
-    button{
+    .remove,.edit{
         display: flex;
         justify-content: center;
         align-items: center;
@@ -58,7 +58,7 @@
         padding: 10px;
         border: 3px solid black;
         cursor: pointer;
-
+        
         p{
             font-weight: 600;
         }
@@ -71,6 +71,11 @@
         &:active{
             opacity: 0.5;
         }
+    }
+
+    .remove{
+        background: rgb(247, 177, 169);
+        margin-bottom: 10px;
     }
 }
 

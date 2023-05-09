@@ -7,11 +7,59 @@
   align-items: center;
   
 }
-.container__inner{
+.inner{
   
   h1{
     font-size: 30px;
     font-weight: 700;
     margin-bottom: 10px;
+  }
+}
+
+.diagram{
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid rgb(0, 0, 0);
+  background: rgb(255, 255, 255);
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  p{
+    font-weight: 600;
+  }
+
+  &:hover{
+      opacity: 0.8;
+  }
+
+  &:active{
+      opacity: 0.5;
+  }
+}
+
+.openFormBtn{
+  height: 50px;
+  width: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid rgb(0, 0, 0);
+  background: rgb(212, 247, 169);
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  p{
+      font-weight: 600;
+  }
+
+  &:hover{
+      opacity: 0.8;
+  }
+
+  &:active{
+      opacity: 0.5;
   }
 }

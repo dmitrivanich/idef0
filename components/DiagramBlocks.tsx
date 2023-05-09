@@ -4,20 +4,19 @@ import { Block, Elements, Diagram, Line, Connect } from '@/types';
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from '@/store';
 
-export const DiagramBlocks = () => {
+export const DiagramBlocks = ({diagram}:{diagram:Diagram}) => {
     const blocksRef= useRef(null)
-    const diagram = useStore(state=>state.currentDiagram)
     const level = useStore(state=>state.currentLevel)
     const [currentBocks, setCurrentBlocks] = useState<Block[]>([])
     const [connects, setConnects] = useState<{elements: Elements, lines: Line[]} | null>(null)
 
     useEffect(()=>{
         if(!diagram) return
+        
         let blocks = diagram.blocks.filter((block:Block)=> block.level === level)
         setCurrentBlocks(blocks)  
 
         let connects = processBlocks(blocks)
-        console.log(connects)
         setConnects(connects)//Устанавливаем связи елемент-блок, блок-блок
 
         if(blocksRef.current){

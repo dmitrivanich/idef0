@@ -1,4 +1,5 @@
 import s from "@/styles/CreateDiagramForm.module.scss"
+import uniqid from 'uniqid'
 import { useStore } from "@/store"
 import { Block, Diagram} from "@/types"
 import Link from "next/link"
@@ -9,13 +10,12 @@ interface EditFormParams {
     titleLabel: string,
     buttonName: string,
     currentDiagram: Diagram
-  }, 
-  closeForm?: () => void | undefined
+  }
+  close?: ()=> void
 }
 
-export default function CreateDiagramForm({params = undefined, closeForm = ()=>{}} : EditFormParams) {
-
-  const setCurrentDiagram = useStore(state => state.setCurrentDiagram)
+export default function CreateDiagramForm({params = undefined, close} : EditFormParams) {
+  const saveDiagram = useStore(state => state.saveDiagram)
   const [editedDiagram, setEditedDiagram] = useState<Diagram | null>(params? params.currentDiagram : null)
 
   //d_ - обозначает "диаграмма"
@@ -39,11 +39,11 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
   },[])
   useEffect(()=>{
     if(editedDiagram && params) {
-      setCurrentDiagram(editedDiagram)
+      saveDiagram(editedDiagram)
     }
   },[editedDiagram])
 
-  useEffect(()=>{//при смене уровня
+  useEffect(()=>{//при смене уровня заполняем поля
     if(!params || !editedDiagram || !editedDiagram.blocks[0]) return
 
     if(num_level === 0){
@@ -54,6 +54,7 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
       setD_Output(block.outputs.join(',')); setD_Outputs(block.outputs);
       setD_Mechanism(block.mechanisms.join(',')); setD_Mechanisms(block.mechanisms);
       setD_Control(block.controls.join(',')); setD_Controls(block.controls);
+
       return
     }
 
@@ -105,6 +106,11 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
   const saveLevel = useCallback(()=>{
     if(!editedDiagram) return
 
+    if(!d_title || !d_input || !d_output || !d_control || !d_mechanism){
+      alert("Не все поля заполнены")
+      return
+    }
+
     if(num_level === 0){
       const headLevel = {
         title: d_title,
@@ -121,7 +127,7 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
       newBlocks.splice(0, 1, headLevel)
 
       const newDiagram = {
-        id: 0,
+        id: editedDiagram.id,
         name: editedDiagram.blocks[0].title,
         blocks: newBlocks
       }
@@ -144,9 +150,6 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
       const blocks = editedDiagram.blocks
       let isAdded = false
 
-
-      
-
       const newBlocks = blocks.map((block:Block) => {
         if(block.level === newBlock.level && block.subLevel === newBlock.subLevel){
           isAdded = true
@@ -167,7 +170,13 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
 
   //создание диаграммы
   const create = useCallback(()=>{
+    if(!d_title || !d_input || !d_output || !d_control || !d_mechanism){
+      alert("Не все поля заполнены")
+      return
+    }
     if(!params){
+      const id = uniqid()
+      
       const A0_Block = {
         title: d_title,
         level: num_level,
@@ -178,13 +187,14 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
         mechanisms: d_mechanisms,
       }
 
-      setCurrentDiagram({
-        id: 0,
+      saveDiagram({
+        id: id,
         name: d_title,
         blocks:[A0_Block]
       })
+
+      close && close() //закрыть форму
     }
-    // if(closeForm) closeForm() - закрыть форму
   },[d_title,d_input,d_output,d_control,d_mechanism])
 
   return (
@@ -271,15 +281,20 @@ export default function CreateDiagramForm({params = undefined, closeForm = ()=>{
           }/>
         </div>
 
-        {params && <div className={s.createBtn} onClick={saveLevel}>
-            <p>{params.buttonName}</p>
-        </div>}
 
-        {!params &&<Link href={`/diagram/${0}`}>
-          <div className={s.createBtn} onClick={create}>
-             <p>Создать</p>
-          </div>
-        </Link>}
+        <div className={s.buttons}>
+          {params && <button className={s.createBtn} onClick={saveLevel}>
+              <p>{params.buttonName}</p>
+          </button>}
+          
+          {!params && <button className={s.createBtn} onClick={create}>
+              <p>Создать</p>
+          </button>}
+
+          {close && <button className={s.closeBtn} onClick={close}>
+              <p>Закрыть</p>
+          </button>}
+        </div>
           
       </div>
     </div>

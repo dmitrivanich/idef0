@@ -1,19 +1,28 @@
-import { useEffect, useState } from "react";
 import s from "@/styles/Diagram.module.scss";
-import { DiagramBlocks } from "@/components/DiagramBlocks";
+
 import { useStore } from "@/store";
 import { Diagram } from "@/types";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 //Gesture
 import { useSpring, animated } from '@react-spring/web'
 import { useDrag, usePinch } from '@use-gesture/react'
+//Components
 import CreateDiagramForm from "@/components/CreateDiagramForm";
+import { DiagramBlocks } from "@/components/DiagramBlocks";
 import { Tree } from "@/components/Tree";
 
+
 export default function Diagram() {
-    
-    const diagram = useStore(state=>state.currentDiagram)
+    const router = useRouter()
+
+    const diagrams = useStore(state=>state.diagrams)
+    const removeDiagram = useStore(state=>state.removeDiagram)
     const setCurrentLevel = useStore(state=>state.setCurrentLevel)
+    
     const [isRedactoring, setIsRedactoring] = useState(false);
     const [currentDiagram,setCurrentDiagram] = useState<Diagram|null>(null)
     const [topLevels, setTopLevels] = useState<number[]>([])
@@ -21,13 +30,22 @@ export default function Diagram() {
     const [diagramVariant, setDiagramVariant] = useState('idef0')
 
     useEffect(()=>{
-        setCurrentDiagram(diagram)
+        if(router.query.id){
+            console.log(diagrams)
+            let diagram = diagrams.find(d => d.id === router.query.id)
 
-        const uniqLevels: Set<number> = new Set()
-        diagram?.blocks.forEach(block=> uniqLevels.add(block.level))
+            if(!diagram) return
 
-        setTopLevels(Array.from(uniqLevels))
-    },[diagram])
+            setCurrentDiagram(diagram)
+
+            const uniqLevels: Set<number> = new Set()
+            diagram?.blocks.forEach(block=> uniqLevels.add(block.level))
+
+            setTopLevels(Array.from(uniqLevels))
+        } else return
+
+        
+    },[diagrams])
 
     //GESTURE
     const [{ x, y }, api] = useSpring(() => ({ x: 0, y: 0}))
@@ -37,15 +55,19 @@ export default function Diagram() {
         rubberband: true
     })
 
-    const uniqLevels:number[] = []
-    currentDiagram?.blocks.map(block=> uniqLevels.find(level => block.level === level))
-
     return (
         currentDiagram && <div className={s.diagramWrapper}>
             <div className={s.content}>
                 
                 <div className={s.tools}>
-                    <button onClick={()=>setIsRedactoring(!isRedactoring)}><p>{isRedactoring ? "Закрыть" : "Редактировать"}</p></button>
+                    <Link href={"/"} className={s.remove} onClick={()=>{
+
+                        removeDiagram(currentDiagram)
+                        setCurrentLevel(0)
+                    }}>
+                        <p>Удалить</p>
+                    </Link>
+                    <button className={s.edit} onClick={()=>setIsRedactoring(!isRedactoring)}><p>{isRedactoring ? "Закрыть" : "Редактировать"}</p></button>
                     <div>
                         <label>Уровень:</label>
                         <select name="level" onChange={(e)=> setCurrentLevel(+e.target.value)}>
@@ -72,12 +94,12 @@ export default function Diagram() {
                                 "titleLabel": "Редактирование диаграммы",
                                 "buttonName": "Сохранить изменения",
                                 "currentDiagram": currentDiagram
-                            }} closeForm = {() => setIsRedactoring(false)}/>
+                            }}/>
                     </div>
                 }
 
                 <animated.div className={s.zoom_Field} {...bind()} style={{ x, y, touchAction: 'none' }} >
-                    {diagramVariant === "idef0" && <DiagramBlocks/>}
+                    {diagramVariant === "idef0" && <DiagramBlocks diagram={currentDiagram}/>}
                     {diagramVariant === "tree" && <Tree />}
                 </animated.div>
 

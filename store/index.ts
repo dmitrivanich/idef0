@@ -1,3 +1,4 @@
+import { DiagramBlocks } from '@/components/DiagramBlocks'
 import { AppState, Diagram } from '@/types'
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
@@ -11,9 +12,25 @@ export const useStore = create<AppState>()(
         persist((set, get) => ({
             currentLevel: 0,
             diagrams: [],
-            currentDiagram: null,
-            setCurrentDiagram: (d:Diagram) => set({currentDiagram: d}),
-            setCurrentLevel: (s:number) => set({currentLevel: s})
+            saveDiagram: (d:Diagram) => {
+                let isSaved = false
+                let newDiagrams = get().diagrams.map(el => {
+                    if(el.id === d.id){
+                        isSaved = true
+                        return d
+                    }else return el
+                })
+
+                if(!isSaved) newDiagrams.push(d)
+
+                set({diagrams: newDiagrams})
+            },
+            removeDiagram: (d:Diagram) => {
+                let newDiagrams = get().diagrams.filter((el)=>el.id !== d.id)
+                
+                set({diagrams: newDiagrams})
+            },
+            setCurrentLevel: (s:number) => set({currentLevel: s}),
         }),
         {
             name: "app-storage" // name of the key, state will be saved under items

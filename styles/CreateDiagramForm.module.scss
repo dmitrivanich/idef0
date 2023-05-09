@@ -94,13 +94,20 @@
     }
 }
 
-.createBtn{
+.buttons{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.createBtn, .closeBtn{
     height: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
     border: 3px solid rgb(0, 0, 0);
     background: rgb(212, 247, 169);
+    margin-bottom: 10px;
     cursor: pointer;
     transition: opacity 0.2s ease;
 
@@ -115,4 +122,8 @@
     &:active{
         opacity: 0.5;
     }
+}
+
+.closeBtn{
+    background: rgb(247, 199, 169);
 }
