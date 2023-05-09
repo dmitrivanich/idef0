@@ -42,10 +42,13 @@ export default function Diagram() {
             diagram?.blocks.forEach(block=> uniqLevels.add(block.level))
 
             setTopLevels(Array.from(uniqLevels))
-        } else return
+        } else {
+            console.log('у')
+            return
+        }
 
         
-    },[diagrams])
+    },[router, diagrams])
 
     //GESTURE
     const [{ x, y }, api] = useSpring(() => ({ x: 0, y: 0}))
