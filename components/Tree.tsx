@@ -4,9 +4,8 @@ import { Block, Elements, Diagram, Line, Connect } from '@/types';
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from '@/store';
 
-export const Tree = () => {
+export const Tree = ({diagram}:{diagram:Diagram}) => {
     const blocksRef= useRef(null)
-    const diagram = useStore(state=>state.currentDiagram)
     const level = useStore(state=>state.currentLevel)
     const [hierarchy, setHierarchy] = useState<Map<number,Block[]>>(new Map())
 
@@ -27,7 +26,7 @@ export const Tree = () => {
         setHierarchy(newHierarchy)
 
         console.log(Array.from(newHierarchy))
-    },[diagram,level,blocksRef])
+    },[level,blocksRef])
 
     return (
         <div className={s.tree}>

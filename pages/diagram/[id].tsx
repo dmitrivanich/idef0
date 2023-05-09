@@ -100,7 +100,7 @@ export default function Diagram() {
 
                 <animated.div className={s.zoom_Field} {...bind()} style={{ x, y, touchAction: 'none' }} >
                     {diagramVariant === "idef0" && <DiagramBlocks diagram={currentDiagram}/>}
-                    {diagramVariant === "tree" && <Tree />}
+                    {diagramVariant === "tree" && <Tree diagram={currentDiagram}/>}
                 </animated.div>
 
             </div>
