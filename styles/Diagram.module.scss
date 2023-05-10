@@ -80,7 +80,7 @@
             margin-right: 20px;
         }
 
-        .openCreateFromBtn,.openEditFromBtn,.treeBtn,.removeBtn{
+        .openCreateFromBtn,.openEditFromBtn,.treeBtn,.removeBtn,.backBtn{
             display: flex;
             width: 150px;
             height: 50px;
@@ -116,6 +116,11 @@
         }
         .treeBtn{
             background: rgb(247, 235, 169);
+        }
+
+        .backBtn{
+            background: rgb(247, 199, 169);
+            width: 70px;
         }
     }
 }

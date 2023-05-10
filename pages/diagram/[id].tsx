@@ -3,7 +3,7 @@ import s from "@/styles/Diagram.module.scss";
 import { useStore } from "@/store";
 import { Diagram } from "@/types";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -53,6 +53,15 @@ export default function Diagram() {
         rubberband: true
     })
 
+    const popup = useCallback(()=>{
+        if (confirm("Вы уверены что хотите удалить диаграмму?")) {
+            if(!currentDiagram) return
+            removeDiagram(currentDiagram)
+            setCurrentLevel(0)
+            window.location.href = "/"
+        } else return
+    },[currentDiagram])
+
     return (
         currentDiagram && <div className={s.diagramWrapper}>
             <div className={s.content}>
@@ -81,14 +90,14 @@ export default function Diagram() {
                                 </select>
                             </div>
                             <div className={s.buttons}>
-                                <button className={s.removeBtn}>
-                                    <Link href={"/"} onClick={()=>{
-                                        removeDiagram(currentDiagram)
-                                        setCurrentLevel(0)
-                                    }}>
-                                        <p>Удалить</p>
-                                    </Link>
+                                <button className={s.removeBtn} onClick={popup}>
+                                     <p>Удалить</p>
                                 </button>
+                                <Link href={"/"}>
+                                    <button className={s.backBtn}>
+                                        <p>Назад</p>
+                                    </button>
+                                </Link>
                                 <button className={s.openEditFromBtn} onClick={()=>setIsRedactoring(!isRedactoring)}><p>{isRedactoring ? "Закрыть" : "Редактировать"}</p></button>
                                 <button className={s.openCreateFromBtn} onClick={()=>setIsRedactoring(!isRedactoring)}><p>{isRedactoring ? "Закрыть" : "Создать новый уровень"}</p></button>
                                 <button className={s.treeBtn} onClick={()=>setIsTree(!isTree)}><p>{isTree ? "Закрыть дерево" : "Открыть дерево"}</p></button>
