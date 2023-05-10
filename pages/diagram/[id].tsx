@@ -27,7 +27,7 @@ export default function Diagram() {
     const [currentDiagram,setCurrentDiagram] = useState<Diagram|null>(null)
     const [topLevels, setTopLevels] = useState<number[]>([])
 
-    const [diagramVariant, setDiagramVariant] = useState('idef0')
+    const [isTree, setIsTree] = useState(false)
 
     useEffect(()=>{
         if(router.query.id){
@@ -42,12 +42,7 @@ export default function Diagram() {
             diagram?.blocks.forEach(block=> uniqLevels.add(block.level))
 
             setTopLevels(Array.from(uniqLevels))
-        } else {
-            console.log('у')
-            return
         }
-
-        
     },[router, diagrams])
 
     //GESTURE
@@ -61,35 +56,6 @@ export default function Diagram() {
     return (
         currentDiagram && <div className={s.diagramWrapper}>
             <div className={s.content}>
-                
-                <div className={s.tools}>
-                    <Link href={"/"} className={s.remove} onClick={()=>{
-
-                        removeDiagram(currentDiagram)
-                        setCurrentLevel(0)
-                    }}>
-                        <p>Удалить</p>
-                    </Link>
-                    <button className={s.edit} onClick={()=>setIsRedactoring(!isRedactoring)}><p>{isRedactoring ? "Закрыть" : "Редактировать"}</p></button>
-                    <div>
-                        <label>Уровень:</label>
-                        <select name="level" onChange={(e)=> setCurrentLevel(+e.target.value)}>
-                            {
-                                topLevels.map((level,index)=>{
-                                return <option key={`key-${level}-${index}`}>{level}</option>
-                                })
-                            }
-                        </select>
-                    </div>
-                    <div>
-                        <label>Вариант диаграммы:</label>
-                        <select value={diagramVariant} name="diagramVariant" onChange={(e)=> setDiagramVariant(e.target.value)}>
-                            <option>idef0</option>
-                            <option>tree</option>
-                        </select>
-                    </div>
-                </div>
-
                 {isRedactoring && 
                     <div className={s.form}>
                         <CreateDiagramForm params={
@@ -97,13 +63,40 @@ export default function Diagram() {
                                 "titleLabel": "Редактирование диаграммы",
                                 "buttonName": "Сохранить изменения",
                                 "currentDiagram": currentDiagram
-                            }}/>
+                            }} close={() => setIsRedactoring(false)}/>
                     </div>
                 }
 
                 <animated.div className={s.zoom_Field} {...bind()} style={{ x, y, touchAction: 'none' }} >
-                    {diagramVariant === "idef0" && <DiagramBlocks diagram={currentDiagram}/>}
-                    {diagramVariant === "tree" && <Tree diagram={currentDiagram}/>}
+                    <div className={s.frame}>
+                        <div className={s.tools}>
+                            <div className={s.level}>
+                                <label>Уровень:</label>
+                                <select name="level" onChange={(e)=> setCurrentLevel(+e.target.value)}>
+                                    {
+                                        topLevels.map((level,index)=>{
+                                        return <option key={`key-${level}-${index}`}>{level}</option>
+                                        })
+                                    }
+                                </select>
+                            </div>
+                            <div className={s.buttons}>
+                                <button className={s.removeBtn}>
+                                    <Link href={"/"} onClick={()=>{
+                                        removeDiagram(currentDiagram)
+                                        setCurrentLevel(0)
+                                    }}>
+                                        <p>Удалить</p>
+                                    </Link>
+                                </button>
+                                <button className={s.openEditFromBtn} onClick={()=>setIsRedactoring(!isRedactoring)}><p>{isRedactoring ? "Закрыть" : "Редактировать"}</p></button>
+                                <button className={s.openCreateFromBtn} onClick={()=>setIsRedactoring(!isRedactoring)}><p>{isRedactoring ? "Закрыть" : "Создать новый уровень"}</p></button>
+                                <button className={s.treeBtn} onClick={()=>setIsTree(!isTree)}><p>{isTree ? "Закрыть дерево" : "Открыть дерево"}</p></button>
+                            </div>
+                        </div>
+                        {!isTree && <DiagramBlocks diagram={currentDiagram}/>}
+                        {isTree && <Tree diagram={currentDiagram} close={()=>setIsTree(false)}/>}
+                    </div>
                 </animated.div>
 
             </div>

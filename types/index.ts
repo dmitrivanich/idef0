@@ -35,6 +35,7 @@ export interface Diagram {
 
 export interface AppState { 
     diagrams: Diagram[],
+    openedBlock: Block | null,
     currentLevel: number,
     saveDiagram: (d:Diagram) => void,
     removeDiagram: (d:Diagram) => void,

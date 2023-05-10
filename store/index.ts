@@ -1,5 +1,5 @@
 import { DiagramBlocks } from '@/components/DiagramBlocks'
-import { AppState, Diagram } from '@/types'
+import { AppState, Diagram, Block } from '@/types'
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 
@@ -11,6 +11,7 @@ export const useStore = create<AppState>()(
         //persist сохраняет глобальные стейты в localstorage
         persist((set, get) => ({
             currentLevel: 0,
+            openedBlock: null,
             diagrams: [],
             saveDiagram: (d:Diagram) => {
                 let isSaved = false

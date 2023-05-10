@@ -21,61 +21,102 @@
 }
 
 
+
 .zoom_Field{
     min-width: 2000px;
     min-height: 2000px;
     border: 5px solid black;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     background: rgb(255, 255, 255);
+
+    position: relative;
+}
+
+.frame{
+    min-width: auto;
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgb(255, 255, 255);
+
+    position: relative;
+
+    border: 4px solid black;
 }
 
 .tools{
     background: white;
     padding: 20px;
-    border: 4px solid black;
 
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 3;
+    width: 100%;
     
     display: flex;
-    flex-direction:column;
-    justify-content: center;
+    flex-direction: column;
 
-    div{
-        margin-top: 20px;    
+    border-bottom: 4px solid black;
+    position: relative;
+
+    .level{
+        position: absolute;
+        left: 10px;
+        top: 10px;
+
+        label{
+            margin-right: 10px;
+        }
     }
 
-    .remove,.edit{
+    .buttons{
         display: flex;
-        justify-content: center;
+        justify-content: end;
         align-items: center;
-        transition: opacity 0.2s ease;
-        background: rgb(212, 247, 169);
-        padding: 10px;
-        border: 3px solid black;
-        cursor: pointer;
         
-        p{
-            font-weight: 600;
-        }
-        
-
-        &:hover{
-            opacity: 0.8;
+        button{
+            margin-right: 20px;
         }
 
-        &:active{
-            opacity: 0.5;
+        .openCreateFromBtn,.openEditFromBtn,.treeBtn,.removeBtn{
+            display: flex;
+            width: 150px;
+            height: 50px;
+            
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.2s ease;
+            background: rgb(212, 247, 169);
+            padding: 10px;
+            border: 3px solid black;
+            cursor: pointer;
+            
+            p{
+                font-size: 13px;
+                font-weight: 600;
+            }
+            
+    
+            &:hover{
+                opacity: 0.8;
+            }
+    
+            &:active{
+                opacity: 0.5;
+            }
         }
-    }
-
-    .remove{
-        background: rgb(247, 177, 169);
-        margin-bottom: 10px;
+    
+        .removeBtn{
+            background: rgb(247, 177, 169);
+        }
+        .openEditFromBtn{
+            background: rgb(169, 196, 247);
+        }
+        .treeBtn{
+            background: rgb(247, 235, 169);
+        }
     }
 }
 

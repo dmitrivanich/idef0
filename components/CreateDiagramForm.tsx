@@ -200,7 +200,7 @@ export default function CreateDiagramForm({params = undefined, close} : EditForm
   return (
     <div className={s.container}>
       <div className={s.container_inner}>
-
+        
         <h2  className={s.title}>{params? params.titleLabel : "Создание диаграммы"}</h2>
         
         {params && 
