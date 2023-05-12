@@ -7,6 +7,8 @@ import { useStore } from '@/store';
 export const Tree = ({diagram, close}:{diagram:Diagram, close:()=>void}) => {
     const blocksRef= useRef(null)
     const level = useStore(state=>state.currentLevel)
+    const setOpenBlock = useStore(state=>state.setOpenBlock)
+    const setCurrentLevel = useStore(state=>state.setCurrentLevel)
     const [hierarchy, setHierarchy] = useState<Map<number,Block[]>>(new Map())
 
     useEffect(()=>{
@@ -37,7 +39,10 @@ export const Tree = ({diagram, close}:{diagram:Diagram, close:()=>void}) => {
                         <div className={s.content}>
                             {
                                 blocks.map(block=>{
-                                    return <div key={`container-A${block.level}${block.subLevel ? "." + block.subLevel : ""}`} onClick={close}>
+                                    return <div key={`container-A${block.level}${block.subLevel ? "." + block.subLevel : ""}`} onClick={()=>{
+                                        setOpenBlock(block)
+                                        close()
+                                    }}>
                                         <div 
                                             key={`A${block.level}.${block.subLevel}`}
                                             className={s.block}
@@ -50,7 +55,11 @@ export const Tree = ({diagram, close}:{diagram:Diagram, close:()=>void}) => {
                             }
                         </div>
 
-                        <div className={s.right} onClick={close}>
+                        <div className={s.right} onClick={()=>{
+                            setOpenBlock(null)
+                            setCurrentLevel(index)
+                            close()
+                        }}>
                             <div className={s.id}>
                                 <p className={s.id}>{`A${index}`}</p>
                             </div>

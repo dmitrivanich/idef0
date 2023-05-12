@@ -35,11 +35,12 @@ export interface Diagram {
 
 export interface AppState { 
     diagrams: Diagram[],
-    openedBlock: Block | null,
+    openBlock: Block | null,
     currentLevel: number,
     saveDiagram: (d:Diagram) => void,
     removeDiagram: (d:Diagram) => void,
     setCurrentLevel: (s:number) => void,
+    setOpenBlock: (b:Block|null) => void,
 }
 
 

@@ -7,13 +7,25 @@ import { useStore } from '@/store';
 export const DiagramBlocks = ({diagram}:{diagram:Diagram}) => {
     const blocksRef= useRef(null)
     const level = useStore(state=>state.currentLevel)
+    const openBlock = useStore(state=>state.openBlock)
+
     const [currentBocks, setCurrentBlocks] = useState<Block[]>([])
     const [connects, setConnects] = useState<{elements: Elements, lines: Line[]} | null>(null)
 
     useEffect(()=>{
         if(!diagram) return
+
+        const getBlocks = () =>{
+            if(openBlock){
+                //Блок, который выбран в дереве блоков
+                return [openBlock]
+            } else {
+                //Отвортированные блоки выбранного уровня
+                return diagram.blocks.filter((block:Block)=> block.level === level).sort((a:Block,b:Block)=> a.subLevel - b.subLevel)
+            }
+        }
         
-        let blocks = diagram.blocks.filter((block:Block)=> block.level === level)
+        let blocks = getBlocks()
         setCurrentBlocks(blocks)  
 
         let connects = processBlocks(blocks)
@@ -26,7 +38,7 @@ export const DiagramBlocks = ({diagram}:{diagram:Diagram}) => {
             //@ts-ignore
             blocksRef.current.style.height = (blocks.length * (240)) + "px"
         }
-    },[diagram,level,blocksRef])
+    },[diagram,level,openBlock, blocksRef])
 
     return (
         <div className={s.diagram}>

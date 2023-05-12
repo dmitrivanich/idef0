@@ -11,7 +11,7 @@ export const useStore = create<AppState>()(
         //persist сохраняет глобальные стейты в localstorage
         persist((set, get) => ({
             currentLevel: 0,
-            openedBlock: null,
+            openBlock: null,
             diagrams: [],
             saveDiagram: (d:Diagram) => {
                 let isSaved = false
@@ -32,6 +32,7 @@ export const useStore = create<AppState>()(
                 set({diagrams: newDiagrams})
             },
             setCurrentLevel: (s:number) => set({currentLevel: s}),
+            setOpenBlock:(b:Block|null) => set({openBlock: b})
         }),
         {
             name: "app-storage" // name of the key, state will be saved under items
