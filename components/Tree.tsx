@@ -2,13 +2,13 @@ import Xarrow, {useXarrow, Xwrapper} from 'react-xarrows';
 import s from "@/styles/Tree.module.scss";
 import { Block, Elements, Diagram, Line, Connect } from '@/types';
 import { useEffect, useRef, useState } from 'react';
-import { useStore } from '@/store';
+import { useDiagram } from '@/store';
 
 export const Tree = ({diagram, close}:{diagram:Diagram, close:()=>void}) => {
     const blocksRef= useRef(null)
-    const level = useStore(state=>state.currentLevel)
-    const setOpenBlock = useStore(state=>state.setOpenBlock)
-    const setCurrentLevel = useStore(state=>state.setCurrentLevel)
+    const level = useDiagram(state=>state.currentLevel)
+    const setOpenBlock = useDiagram(state=>state.setOpenBlock)
+    const setCurrentLevel = useDiagram(state=>state.setCurrentLevel)
     const [hierarchy, setHierarchy] = useState<Map<number,Block[]>>(new Map())
 
     useEffect(()=>{

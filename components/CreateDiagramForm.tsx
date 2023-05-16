@@ -1,9 +1,11 @@
 import s from "@/styles/CreateDiagramForm.module.scss"
 import uniqid from 'uniqid'
-import { useStore } from "@/store"
+import { useAuthStore, useDiagram } from "@/store"
 import { Block, Diagram} from "@/types"
 import Link from "next/link"
 import { useCallback, useEffect,useState, FormEvent, useMemo } from "react"
+import { getDatabase, push, ref, set } from "firebase/database"
+import { writeFirebaseData } from "@/api/firebaseAPI"
 
 interface EditFormParams {
   params?:{
@@ -15,7 +17,9 @@ interface EditFormParams {
 }
 
 export default function CreateDiagramForm({params = undefined, close} : EditFormParams) {
-  const saveDiagram = useStore(state => state.saveDiagram)
+  const saveDiagram = useDiagram(state => state.saveDiagram)
+  const diagrams = useDiagram(state => state.diagrams)
+  const user = useAuthStore(state => state.user)
   const [editedDiagram, setEditedDiagram] = useState<Diagram | null>(params? params.currentDiagram : null)
 
   //d_ - обозначает "диаграмма"
@@ -35,11 +39,8 @@ export default function CreateDiagramForm({params = undefined, close} : EditForm
   const [num_subLevel, setNum_subLevel] = useState<number>(1)//Номер под-уровень диаграммы
 
   useEffect(()=>{
-    params && setEditedDiagram(params.currentDiagram)
-  },[])
-  useEffect(()=>{
-    if(editedDiagram && params) {
-      saveDiagram(editedDiagram)
+    if(editedDiagram && params && user) {
+      saveDiagram(editedDiagram, user)
     }
   },[editedDiagram])
 
@@ -174,7 +175,8 @@ export default function CreateDiagramForm({params = undefined, close} : EditForm
       alert("Не все поля заполнены")
       return
     }
-    if(!params){
+
+    if(!params && user){
       const id = uniqid()
       
       const A0_Block = {
@@ -191,7 +193,7 @@ export default function CreateDiagramForm({params = undefined, close} : EditForm
         id: id,
         name: d_title,
         blocks:[A0_Block]
-      })
+      },user)
 
       close && close() //закрыть форму
     }

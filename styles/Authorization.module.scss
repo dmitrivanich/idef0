@@ -1,0 +1,60 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgb(255, 255, 255);
+    height: 100vh;
+    width: 100vw;
+
+    h1{
+        font-size: 30px;
+        font-weight: 700;
+        margin-bottom: 20px;
+      }
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+
+    max-width: 300px;
+    width: 80%;
+
+    input{
+        width: 100%;
+    }
+
+    .passwords{
+        margin-top: 20px;
+    }
+
+    .password1{
+        margin-bottom: 20px;
+    }
+    
+}
+
+.alert, .alerts{
+    color:red;
+}
+
+.submit{
+    cursor: pointer;
+    margin-bottom: 10px;
+    height: 35px;
+}
+  
+.enter{
+    color: blue;
+    text-decoration:underline   ;
+}
+
+.firebaseError{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    span{
+        color: red;
+    }
+}

@@ -1,6 +1,6 @@
 import s from "@/styles/Diagram.module.scss";
 
-import { useStore } from "@/store";
+import { useAuthStore, useDiagram } from "@/store";
 import { Diagram } from "@/types";
 
 import { useCallback, useEffect, useState } from "react";
@@ -19,9 +19,10 @@ import { Tree } from "@/components/Tree";
 export default function Diagram() {
     const router = useRouter()
 
-    const diagrams = useStore(state=>state.diagrams)
-    const removeDiagram = useStore(state=>state.removeDiagram)
-    const setCurrentLevel = useStore(state=>state.setCurrentLevel)
+    const diagrams = useDiagram(state=>state.diagrams)
+    const removeDiagram = useDiagram(state=>state.removeDiagram)
+    const setCurrentLevel = useDiagram(state=>state.setCurrentLevel)
+    const user = useAuthStore(state => state.user)
     
     const [isRedactoring, setIsRedactoring] = useState(false);
     const [currentDiagram,setCurrentDiagram] = useState<Diagram|null>(null)
@@ -55,8 +56,8 @@ export default function Diagram() {
 
     const popup = useCallback(()=>{
         if (confirm("Вы уверены что хотите удалить диаграмму?")) {
-            if(!currentDiagram) return
-            removeDiagram(currentDiagram)
+            if(!currentDiagram || !user) return
+            removeDiagram(currentDiagram, user)
             setCurrentLevel(0)
             window.location.href = "/"
         } else return

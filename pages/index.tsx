@@ -2,17 +2,27 @@ import { useEffect, useState } from "react";
 import s from '@/styles/Home.module.scss'
 import Link from 'next/link'
 import CreateProjectForm from "@/components/CreateDiagramForm";
-import { useStore } from "@/store";
+import { useAuthStore, useDiagram } from "@/store";
 import { Diagram } from "@/types";
 
+
 export default function Home() {
-    const diagramsFromStore = useStore(state=>state.diagrams)
+    const diagramsFromStore = useDiagram(state=>state.diagrams)
     const [diagrams, setDiagrams] = useState<Diagram[]>([])
     const [isOpenForm, setIsOpenForm] = useState(false)
-
+    const user = useAuthStore(state=>state.user)
+    const [isLoading,setIsLoading] = useState(true)
+    
     useEffect(()=>{
-      setDiagrams(diagramsFromStore)
-    },[diagramsFromStore])
+      if(diagramsFromStore) {
+        setDiagrams(diagramsFromStore)
+      }
+      if(user){
+        setIsLoading(false)
+      }
+    },[diagramsFromStore, user])
+
+    if(isLoading) return <></>
 
     return (
       <div className={s.container}>

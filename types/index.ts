@@ -1,3 +1,5 @@
+import {User} from "firebase/auth"
+
 export interface Elements {
     inputs: Connect[],
     outputs: Connect[],
@@ -33,14 +35,19 @@ export interface Diagram {
     blocks: Block[]
 }
 
-export interface AppState { 
+export interface DiagramState { 
     diagrams: Diagram[],
     openBlock: Block | null,
     currentLevel: number,
-    saveDiagram: (d:Diagram) => void,
-    removeDiagram: (d:Diagram) => void,
+    setDiagrams: (d:Diagram[]) => void,
+    saveDiagram: (d:Diagram, user:User) => void,
+    removeDiagram: (d:Diagram, user:User) => void,
     setCurrentLevel: (s:number) => void,
     setOpenBlock: (b:Block|null) => void,
 }
 
 
+export interface AuthState {
+    user: User|null,
+    setUser: (user:User|null) => void
+}

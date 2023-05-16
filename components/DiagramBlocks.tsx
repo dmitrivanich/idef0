@@ -2,12 +2,12 @@ import Xarrow, {useXarrow, Xwrapper} from 'react-xarrows';
 import s from "@/styles/DiagramBlocks.module.scss";
 import { Block, Elements, Diagram, Line, Connect } from '@/types';
 import { useEffect, useRef, useState } from 'react';
-import { useStore } from '@/store';
+import { useDiagram } from '@/store';
 
 export const DiagramBlocks = ({diagram}:{diagram:Diagram}) => {
     const blocksRef= useRef(null)
-    const level = useStore(state=>state.currentLevel)
-    const openBlock = useStore(state=>state.openBlock)
+    const level = useDiagram(state=>state.currentLevel)
+    const openBlock = useDiagram(state=>state.openBlock)
 
     const [currentBocks, setCurrentBlocks] = useState<Block[]>([])
     const [connects, setConnects] = useState<{elements: Elements, lines: Line[]} | null>(null)
