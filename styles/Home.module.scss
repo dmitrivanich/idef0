@@ -39,7 +39,7 @@
   }
 }
 
-.openFormBtn{
+.openFormBtn, .resetAuthBtn{
   height: 50px;
   width: 200px;
   display: flex;
@@ -61,5 +61,15 @@
 
   &:active{
       opacity: 0.5;
+  }
+}
+
+.resetAuthBtn{
+  background: rgb(247, 238, 169);
+  margin-top: 30px;
+  
+  p{
+    font-weight: 600;
+    font-size: 14px;
   }
 }

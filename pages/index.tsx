@@ -8,6 +8,7 @@ import { Diagram } from "@/types";
 
 export default function Home() {
     const diagramsFromStore = useDiagram(state=>state.diagrams)
+    const setUser = useAuthStore(state=>state.setUser)
     const [diagrams, setDiagrams] = useState<Diagram[]>([])
     const [isOpenForm, setIsOpenForm] = useState(false)
     const user = useAuthStore(state=>state.user)
@@ -44,6 +45,7 @@ export default function Home() {
               <div className={s.tools}>
                 <div>
                   <button className={s.openFormBtn} onClick={()=>setIsOpenForm(!isOpenForm)}><p>{isOpenForm ? "Закрыть" : "Создать новую"}</p></button>
+                  <button className={s.resetAuthBtn} onClick={()=>setUser(null)}><p>Выход из учётной записи</p></button>
                 </div>     
               </div>
             </div>

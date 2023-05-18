@@ -1,4 +1,4 @@
-import s from '@/styles/Authorization.module.scss'
+import s from '@/styles/Authentication.module.scss'
 import { getAuth, createUserWithEmailAndPassword, User } from "firebase/auth";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useState } from "react";

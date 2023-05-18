@@ -1,9 +1,9 @@
 import React from 'react'
-import s from '@/styles/Authorization.module.scss'
+import s from '@/styles/Authentication.module.scss'
 import AuthForm from '@/components/AuthForm';
 
 
-export default function Authorization() {
+export default function Authentication() {
 
 
   return (
