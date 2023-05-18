@@ -15,6 +15,14 @@ export const useDiagram = create<DiagramState>()(
             openBlock: null,
             diagrams: [],
 
+            clearDiagrams: () => {
+                set({
+                    currentLevel: 0,
+                    openBlock: null,
+                    diagrams: [],  
+                })  
+            },
+
             setDiagrams: (d:Diagram[]) => {
                 set({diagrams:d})
             },

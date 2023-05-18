@@ -39,6 +39,7 @@ export interface DiagramState {
     diagrams: Diagram[],
     openBlock: Block | null,
     currentLevel: number,
+    clearDiagrams: () => void,
     setDiagrams: (d:Diagram[]) => void,
     saveDiagram: (d:Diagram, user:User) => void,
     removeDiagram: (d:Diagram, user:User) => void,

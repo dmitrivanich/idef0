@@ -8,6 +8,7 @@ import { Diagram } from "@/types";
 
 export default function Home() {
     const diagramsFromStore = useDiagram(state=>state.diagrams)
+    const clearDiagrams = useDiagram(state=>state.clearDiagrams)
     const setUser = useAuthStore(state=>state.setUser)
     const [diagrams, setDiagrams] = useState<Diagram[]>([])
     const [isOpenForm, setIsOpenForm] = useState(false)
@@ -15,12 +16,16 @@ export default function Home() {
     const [isLoading,setIsLoading] = useState(true)
     
     useEffect(()=>{
+      if(user) {
+        setIsLoading(false)
+      }
+
       if(diagramsFromStore) {
         setDiagrams(diagramsFromStore)
       }
-      if(user){
-        setIsLoading(false)
-      }
+      
+      
+
     },[diagramsFromStore, user])
 
     if(isLoading) return <></>
@@ -45,7 +50,10 @@ export default function Home() {
               <div className={s.tools}>
                 <div>
                   <button className={s.openFormBtn} onClick={()=>setIsOpenForm(!isOpenForm)}><p>{isOpenForm ? "Закрыть" : "Создать новую"}</p></button>
-                  <button className={s.resetAuthBtn} onClick={()=>setUser(null)}><p>Выход из учётной записи</p></button>
+                  <button className={s.resetAuthBtn} onClick={()=>{
+                    setUser(null)
+                    clearDiagrams()
+                  }}><p>Выход из учётной записи</p></button>
                 </div>     
               </div>
             </div>
