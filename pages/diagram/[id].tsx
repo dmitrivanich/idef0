@@ -81,16 +81,6 @@ export default function Diagram() {
                 <animated.div className={s.zoom_Field} {...bind()} style={{ x, y, touchAction: 'none' }} >
                     <div className={s.frame}>
                         <div className={s.tools}>
-                            <div className={s.level}>
-                                <label>Уровень:</label>
-                                <select name="level" onChange={(e)=> setCurrentLevel(e.target.value)}>
-                                    {
-                                        topLevels.map((level,index)=>{
-                                        return <option key={`key-${level}-${index}`}>{level}</option>
-                                        })
-                                    }
-                                </select>
-                            </div>
                             <div className={s.buttons}>
                                 <button className={s.removeBtn} onClick={popup}>
                                      <p>Удалить</p>
