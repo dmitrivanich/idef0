@@ -11,13 +11,13 @@ export const useDiagram = create<DiagramState>()(
     devtools(//эта обёртка позволяет работать с плагином redux-devtools
         //persist сохраняет глобальные стейты в localstorage
         persist((set, get) => ({
-            currentLevel: 0,
+            currentLevel: "0",
             openBlock: null,
             diagrams: [],
 
             clearDiagrams: () => {
                 set({
-                    currentLevel: 0,
+                    currentLevel: "0",
                     openBlock: null,
                     diagrams: [],  
                 })  
@@ -48,7 +48,7 @@ export const useDiagram = create<DiagramState>()(
                 set({diagrams: newDiagrams})
             },
 
-            setCurrentLevel: (s:number) => set({currentLevel: s}),
+            setCurrentLevel: (s:string) => set({currentLevel: s}),
             setOpenBlock:(b:Block|null) => set({openBlock: b})
         }),
         {
