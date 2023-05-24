@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useSpring, animated } from '@react-spring/web'
 import { useDrag, usePinch } from '@use-gesture/react'
 //Components
-import CreateDiagramForm from "@/components/CreateDiagramForm";
+import CreateDiagramForm from "@/components/DiagramForm";
 import { DiagramBlocks } from "@/components/DiagramBlocks";
 import { Tree } from "@/components/Tree";
 
@@ -22,24 +22,24 @@ export default function Diagram() {
     const diagrams = useDiagram(state=>state.diagrams)
     const removeDiagram = useDiagram(state=>state.removeDiagram)
     const setCurrentLevel = useDiagram(state=>state.setCurrentLevel)
+    const setOpenBlock = useDiagram(state=>state.setOpenBlock)
     const user = useAuthStore(state => state.user)
     
     const [isRedactoring, setIsRedactoring] = useState(false);
     const [currentDiagram,setCurrentDiagram] = useState<Diagram|null>(null)
-    const [topLevels, setTopLevels] = useState<number[]>([])
+    const [topLevels, setTopLevels] = useState<string[]>([])
 
-    const [isTree, setIsTree] = useState(false)
+    const [isTree, setIsTree] = useState(true)
 
     useEffect(()=>{
         if(router.query.id){
-            console.log(diagrams)
             let diagram = diagrams.find(d => d.id === router.query.id)
 
             if(!diagram) return
 
             setCurrentDiagram(diagram)
 
-            const uniqLevels: Set<number> = new Set()
+            const uniqLevels: Set<string> = new Set()
             diagram?.blocks.forEach(block=> uniqLevels.add(block.level))
 
             setTopLevels(Array.from(uniqLevels))
@@ -58,8 +58,9 @@ export default function Diagram() {
         if (confirm("Вы уверены что хотите удалить диаграмму?")) {
             if(!currentDiagram || !user) return
             removeDiagram(currentDiagram, user)
-            setCurrentLevel(0)
-            window.location.href = "/"
+            setCurrentLevel("0")
+            setOpenBlock(null)
+            router.push("/")
         } else return
     },[currentDiagram])
 
@@ -70,7 +71,7 @@ export default function Diagram() {
                     <div className={s.form}>
                         <CreateDiagramForm params={
                             {
-                                "titleLabel": "Редактирование диаграммы",
+                                "titleLabel": "Модификация диаграммы",
                                 "buttonName": "Сохранить изменения",
                                 "currentDiagram": currentDiagram
                             }} close={() => setIsRedactoring(false)}/>
@@ -82,7 +83,7 @@ export default function Diagram() {
                         <div className={s.tools}>
                             <div className={s.level}>
                                 <label>Уровень:</label>
-                                <select name="level" onChange={(e)=> setCurrentLevel(+e.target.value)}>
+                                <select name="level" onChange={(e)=> setCurrentLevel(e.target.value)}>
                                     {
                                         topLevels.map((level,index)=>{
                                         return <option key={`key-${level}-${index}`}>{level}</option>
@@ -99,8 +100,7 @@ export default function Diagram() {
                                         <p>Назад</p>
                                     </button>
                                 </Link>
-                                <button className={s.openEditFromBtn} onClick={()=>setIsRedactoring(!isRedactoring)}><p>{isRedactoring ? "Закрыть" : "Редактировать"}</p></button>
-                                <button className={s.openCreateFromBtn} onClick={()=>setIsRedactoring(!isRedactoring)}><p>{isRedactoring ? "Закрыть" : "Создать новый уровень"}</p></button>
+                                <button className={s.openEditFromBtn} onClick={()=>setIsRedactoring(!isRedactoring)}><p>Модифицировать</p></button>
                                 <button className={s.treeBtn} onClick={()=>setIsTree(!isTree)}><p>{isTree ? "Закрыть дерево" : "Открыть дерево"}</p></button>
                             </div>
                         </div>

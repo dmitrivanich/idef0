@@ -5,7 +5,6 @@ import AuthForm from '@/components/AuthForm';
 
 export default function Authentication() {
 
-
   return (
     <div className={s.container}>
       <AuthForm/>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import s from '@/styles/Home.module.scss'
 import Link from 'next/link'
-import CreateProjectForm from "@/components/CreateDiagramForm";
+import CreateProjectForm from "@/components/DiagramForm";
 import { useAuthStore, useDiagram } from "@/store";
 import { Diagram } from "@/types";
 

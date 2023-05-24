@@ -21,8 +21,7 @@ export  interface Line  {
 
 export interface Block{
     title: string,
-    level: number,
-    subLevel: number,
+    level: string,
     inputs: string[],
     outputs: string[],
     controls: string[],
@@ -38,15 +37,14 @@ export interface Diagram {
 export interface DiagramState { 
     diagrams: Diagram[],
     openBlock: Block | null,
-    currentLevel: number,
+    currentLevel: string,
     clearDiagrams: () => void,
     setDiagrams: (d:Diagram[]) => void,
     saveDiagram: (d:Diagram, user:User) => void,
     removeDiagram: (d:Diagram, user:User) => void,
-    setCurrentLevel: (s:number) => void,
+    setCurrentLevel: (s:string) => void,
     setOpenBlock: (b:Block|null) => void,
 }
-
 
 export interface AuthState {
     user: User|null,

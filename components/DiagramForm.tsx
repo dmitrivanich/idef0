@@ -1,4 +1,4 @@
-import s from "@/styles/CreateDiagramForm.module.scss"
+import s from "@/styles/DiagramForm.module.scss"
 import uniqid from 'uniqid'
 import { useAuthStore, useDiagram } from "@/store"
 import { Block, Diagram} from "@/types"
@@ -6,6 +6,8 @@ import Link from "next/link"
 import { useCallback, useEffect,useState, FormEvent, useMemo } from "react"
 import { getDatabase, push, ref, set } from "firebase/database"
 import { writeFirebaseData } from "@/api/firebaseAPI"
+import { compareArrays } from "@/utils"
+
 
 interface EditFormParams {
   params?:{
@@ -16,7 +18,7 @@ interface EditFormParams {
   close?: ()=> void
 }
 
-export default function CreateDiagramForm({params = undefined, close} : EditFormParams) {
+export default function DiagramForm({params = undefined, close} : EditFormParams) {
   const saveDiagram = useDiagram(state => state.saveDiagram)
   const diagrams = useDiagram(state => state.diagrams)
   const user = useAuthStore(state => state.user)
@@ -24,22 +26,24 @@ export default function CreateDiagramForm({params = undefined, close} : EditForm
 
   //d_ - обозначает "диаграмма"
   //Локальные стейты для инпутов
-  const [d_title,setD_Title] = useState(params? params.currentDiagram.name : "")
-  const [d_input,setD_Input] = useState<string>(params? params.currentDiagram.blocks[0]?.inputs.join(',') : "")
-  const [d_output,setD_Output] = useState<string>(params? params.currentDiagram.blocks[0]?.outputs.join(',') : "")
-  const [d_control,setD_Control] = useState<string>(params? params.currentDiagram.blocks[0]?.controls.join(',') : "")
-  const [d_mechanism,setD_Mechanism] = useState<string>(params? params.currentDiagram.blocks[0]?.mechanisms.join(',') : "")
-  //Все входы, выходы, контроллеры, механимы
-  const [d_inputs,setD_Inputs] = useState<string[]>(params? params.currentDiagram.blocks[0]?.inputs : [])
-  const [d_outputs,setD_Outputs] = useState<string[]>(params? params.currentDiagram.blocks[0]?.outputs : [])
-  const [d_controls,setD_Controls] = useState<string[]>(params? params.currentDiagram.blocks[0]?.controls : [])
-  const [d_mechanisms,setD_Mechanisms] = useState<string[]>(params? params.currentDiagram.blocks[0]?.mechanisms : [])
+  const [d_title, setD_Title] = useState(params? params.currentDiagram.name : "")
+  const [d_input, setD_Input] = useState<string>(params? params.currentDiagram.blocks[0]?.inputs.join(',') : "")
+  const [d_output, setD_Output] = useState<string>(params? params.currentDiagram.blocks[0]?.outputs.join(',') : "")
+  const [d_control, setD_Control] = useState<string>(params? params.currentDiagram.blocks[0]?.controls.join(',') : "")
+  const [d_mechanism, setD_Mechanism] = useState<string>(params? params.currentDiagram.blocks[0]?.mechanisms.join(',') : "")
 
-  const [num_level, setNum_Level] = useState<number>(0)//Номер уровеня диаграммы
-  const [num_subLevel, setNum_subLevel] = useState<number>(1)//Номер под-уровень диаграммы
+  //Все входы, выходы, контроллеры, механимы
+  const [d_inputs, setD_Inputs] = useState<string[]>(params? params.currentDiagram.blocks[0]?.inputs : [])
+  const [d_outputs, setD_Outputs] = useState<string[]>(params? params.currentDiagram.blocks[0]?.outputs : [])
+  const [d_controls, setD_Controls] = useState<string[]>(params? params.currentDiagram.blocks[0]?.controls : [])
+  const [d_mechanisms, setD_Mechanisms] = useState<string[]>(params? params.currentDiagram.blocks[0]?.mechanisms : [])
+
+  const [d_level, setD_Level] = useState<string>("0")//Номер уровеня диаграммы
+
 
   useEffect(()=>{
     if(editedDiagram && params && user) {
+      console.log(editedDiagram)
       saveDiagram(editedDiagram, user)
     }
   },[editedDiagram])
@@ -47,7 +51,8 @@ export default function CreateDiagramForm({params = undefined, close} : EditForm
   useEffect(()=>{//при смене уровня заполняем поля
     if(!params || !editedDiagram || !editedDiagram.blocks[0]) return
 
-    if(num_level === 0){
+    if(d_level === "0"){
+      
       const block = editedDiagram.blocks[0]
 
       setD_Title(block.title);
@@ -57,10 +62,9 @@ export default function CreateDiagramForm({params = undefined, close} : EditForm
       setD_Control(block.controls.join(',')); setD_Controls(block.controls);
 
       return
-    }
 
-    if(num_level > 0){
-      const block = editedDiagram.blocks.find(block => block.level === num_level && block.subLevel === num_subLevel)
+    } else {
+      const block = editedDiagram.blocks.find(block => d_level ===  block.level)
 
       if(block) {
         setD_Title(block.title);
@@ -77,7 +81,7 @@ export default function CreateDiagramForm({params = undefined, close} : EditForm
       }
     }
 
-  },[num_level, num_subLevel, editedDiagram])
+  },[d_level, editedDiagram])
 
   //Добавляет значение стейта в стейт со списком элементов и очищает стейт
   const addElement = useCallback((str:string, elementStateAction:(s:string)=>void,elementsStateAction:(s:string[])=>void)=>{
@@ -88,7 +92,7 @@ export default function CreateDiagramForm({params = undefined, close} : EditForm
       elementStateAction('')
     }
     elementsStateAction(elementWithoutSpaces)
-  },[d_title,d_input,d_output,d_control,d_mechanism, num_level, num_subLevel])
+  },[d_title,d_input,d_output,d_control,d_mechanism, d_level ])
 
   //список jsx элементов
   const elements = useCallback((elements:string[]) => {
@@ -100,23 +104,34 @@ export default function CreateDiagramForm({params = undefined, close} : EditForm
       </div>
     })
   }
-  ,[d_title,d_input,d_output,d_control,d_mechanism, num_level, num_subLevel])
+  ,[d_title,d_input,d_output,d_control,d_mechanism, d_level])
 
 
-  //Сохранение изменений
-  const saveLevel = useCallback(()=>{
+  const clearLevel = () => {
     if(!editedDiagram) return
 
-    if(!d_title || !d_input || !d_output || !d_control || !d_mechanism){
+    let newBlocks = editedDiagram.blocks.filter((block)=> block.level !== d_level)
+
+    setEditedDiagram({
+      ...editedDiagram,
+      blocks: newBlocks
+    })
+  }
+
+  //Сохранение изменений
+  const saveLevel = () => {
+    console.log(d_level, editedDiagram)
+    if (!editedDiagram) return
+
+    if (!d_title || !d_input || !d_output || !d_control || !d_mechanism){
       alert("Не все поля заполнены")
       return
     }
 
-    if(num_level === 0){
+    if (d_level === "0"){
       const headLevel = {
         title: d_title,
-        level: 0,
-        subLevel: 0,
+        level: "0",
         inputs: d_inputs,
         outputs: d_outputs,
         controls: d_controls,
@@ -134,12 +149,10 @@ export default function CreateDiagramForm({params = undefined, close} : EditForm
       }
 
       setEditedDiagram(newDiagram)
-
-      return
-    }else{
+    } else {
+ 
       const newBlock:Block = {
-        level: num_level,
-        subLevel: num_subLevel,
+        level: d_level,
         title: d_title,
         inputs: d_inputs,
         outputs: d_outputs,
@@ -150,27 +163,36 @@ export default function CreateDiagramForm({params = undefined, close} : EditForm
       //Добавление/перезапись нового блока
       const blocks = editedDiagram.blocks
       let isAdded = false
-
+  
       const newBlocks = blocks.map((block:Block) => {
-        if(block.level === newBlock.level && block.subLevel === newBlock.subLevel){
+        if(block.level === newBlock.level){
           isAdded = true
           return newBlock
         } else return block
       }).filter(blocks => blocks.title)
-
-
+  
+  
       if(!isAdded) newBlocks.push(newBlock)
-
-      setEditedDiagram({
-        ...editedDiagram,
+  
+      const newDiagram = {
+        id: editedDiagram.id,
+        name: editedDiagram.blocks[0].title,
         blocks: newBlocks
-      })
+      }
+  
+      setEditedDiagram(newDiagram)
+  
     }
-   
-  },[d_title,d_input,d_output,d_control,d_mechanism,num_level, num_subLevel])
+
+    let time:any = setTimeout(()=>{
+      close && close()
+      return clearTimeout(time)
+    },200)
+    
+  }
 
   //создание диаграммы
-  const create = useCallback(()=>{
+  const create = () => {
     if(!d_title || !d_input || !d_output || !d_control || !d_mechanism){
       alert("Не все поля заполнены")
       return
@@ -181,8 +203,7 @@ export default function CreateDiagramForm({params = undefined, close} : EditForm
       
       const A0_Block = {
         title: d_title,
-        level: num_level,
-        subLevel: 0,
+        level: d_level,
         inputs: d_inputs,
         outputs: d_outputs,
         controls: d_controls,
@@ -197,7 +218,8 @@ export default function CreateDiagramForm({params = undefined, close} : EditForm
 
       close && close() //закрыть форму
     }
-  },[d_title,d_input,d_output,d_control,d_mechanism])
+  }
+
 
   return (
     <div className={s.container}>
@@ -207,11 +229,16 @@ export default function CreateDiagramForm({params = undefined, close} : EditForm
         
         {params && 
           <div className={s.level}> 
-            <p>Уровень: A{num_level}{num_level > 0 && num_subLevel > 0 && "." + num_subLevel}</p>
-            <input min={0} type="number" name="level" value={num_level} onChange={(e:FormEvent<HTMLInputElement>)=>setNum_Level(+e.currentTarget.value)}></input>
-            {num_level > 0 && 
-              <input min={1} type="number" name="subLevel" value={num_subLevel} onChange={(e:FormEvent<HTMLInputElement>)=>setNum_subLevel(+e.currentTarget.value)}></input>
-            }
+
+            <p>Уровень: A{d_level}</p>
+
+            <input min={0} type="string" name="level" value={d_level} onChange={(e:FormEvent<HTMLInputElement>)=>{
+              setD_Level(e.currentTarget.value)
+            }}/>
+
+            {params && d_level !== "0" && <button className={s.clearLevelBtn} onClick={clearLevel}>
+                <p>Удалить уровень</p>
+            </button>}
           </div>
         }
 
@@ -253,7 +280,6 @@ export default function CreateDiagramForm({params = undefined, close} : EditForm
               addElement(e.currentTarget.value, setD_Output,setD_Outputs)
           }}/>
         </div>
-        
         
         <div className={s.inputElement}>
           <div>

@@ -20,8 +20,18 @@ export const DiagramBlocks = ({diagram}:{diagram:Diagram}) => {
                 //Блок, который выбран в дереве блоков
                 return [openBlock]
             } else {
-                //Отвортированные блоки выбранного уровня
-                return diagram.blocks.filter((block:Block)=> block.level === level).sort((a:Block,b:Block)=> a.subLevel - b.subLevel)
+                //Отcортированные блоки выбранного уровня
+                return diagram.blocks
+                    .filter((block:Block)=> {
+                        if(level === "0"){
+                           if(block.level === level) return true
+                        } else {
+                            if(block.level !== "0"){
+                                return block.level.split('.').length === +level
+                            }
+                        }
+                    })
+                    // .sort((a:Block,b:Block)=> +a.level.split('.').join('') - +b.level.split('.').join(''))
             }
         }
         
@@ -48,15 +58,15 @@ export const DiagramBlocks = ({diagram}:{diagram:Diagram}) => {
                     connects?.elements.mechanisms.map((element, index)=>{
                         
                         if(element.targets){
-                            return <div key={`A${element.target.level}.${element.target.subLevel}-key-mechanisms-${index}`}  id={`mechanisms-${element.name}`}>
+                            return <div key={`A${element.target.level}-key-mechanisms-${index}`}  id={`mechanisms-${element.name}`}>
                                 <p className={s.mechanism}>{element.name}</p>
                                 {element.targets.map((target:Block, ind:number) => 
-                                    <div key={`A${target.level}.${target.subLevel}-key-mechanisms-${index}-${ind}`}>
+                                    <div key={`A${target.level}-key-mechanisms-${index}-${ind}`}>
                                         <Xarrow
                                             startAnchor="bottom"
                                             endAnchor="top"
                                             start={`mechanisms-${element.name}`}
-                                            end={`A${target.level}.${target.subLevel}`}
+                                            end={`A${target.level}`}
                                             color="black"
                                             strokeWidth={2}
                                             gridBreak="30%" 
@@ -65,13 +75,13 @@ export const DiagramBlocks = ({diagram}:{diagram:Diagram}) => {
                                     </div>)
                                 }
                             </div>
-                        } else return <div key={`A${element.target.level}.${element.target.subLevel}-key-mechanisms-${index}`} id={`mechanisms-${element.name}`}>
+                        } else return <div key={`A${element.target.level}-key-mechanisms-${index}`} id={`mechanisms-${element.name}`}>
                             <p className={s.mechanism}>{element.name}</p>
                             <Xarrow
                                 startAnchor="bottom"
                                 endAnchor="top"
                                 start={`mechanisms-${element.name}`}
-                                end={`A${element.target.level}.${element.target.subLevel}`}
+                                end={`A${element.target.level}`}
                                 color="black"
                                 strokeWidth={2}
                                 gridBreak="30%" 
@@ -86,13 +96,13 @@ export const DiagramBlocks = ({diagram}:{diagram:Diagram}) => {
                 <div className={s.inputs}>
                     {
                         connects?.elements.inputs.map((element, index)=>(
-                            <div key={`A${element.target.level}.${element.target.subLevel}-key-input-${index}`}>
-                                <p className={s.input} id={`A${element.target.level}.${element.target.subLevel}-input-${index}`}>{element.name}</p>
+                            <div key={`A${element.target.level}-key-input-${index}`}>
+                                <p className={s.input} id={`A${element.target.level}-input-${index}`}>{element.name}</p>
                                 <Xarrow
-                                    start={`A${element.target.level}.${element.target.subLevel}-input-${index}`}
+                                    start={`A${element.target.level}-input-${index}`}
                                     startAnchor="right"
                                     endAnchor="left"
-                                    end={`A${element.target.level}.${element.target.subLevel}`}
+                                    end={`A${element.target.level}`}
                                     color="black"
                                     strokeWidth={2}
                                     gridBreak="20%" 
@@ -113,11 +123,11 @@ export const DiagramBlocks = ({diagram}:{diagram:Diagram}) => {
                             row.map((cell, cellNumber)=>(
                                 cell === 1 ? 
                                 <div 
-                                    key={`A${currentBocks[rowNumber].level}.${currentBocks[rowNumber].subLevel}`}
+                                    key={`A${currentBocks[rowNumber].level}`}
                                     className={s.block} style={{margin:"200"}} 
-                                    id={`A${currentBocks[rowNumber].level}.${currentBocks[rowNumber].subLevel}`}>
+                                    id={`A${currentBocks[rowNumber].level}`}>
                                         <h6 className={s.name}>{currentBocks[rowNumber].title}</h6>
-                                        <p className={s.id}>{`A${currentBocks[rowNumber].level}${currentBocks[rowNumber].subLevel ? "." + currentBocks[rowNumber].subLevel : ""}`}</p>
+                                        <p className={s.id}>{`A${currentBocks[rowNumber].level}`}</p>
                                 </div>
                                 : <div key={`empty-${rowNumber}-${cellNumber}`} className={s.emptyBlock}/>
                             ))
@@ -125,20 +135,16 @@ export const DiagramBlocks = ({diagram}:{diagram:Diagram}) => {
                     }
                 </div>
 
-
-
-                
-
                 <div className={s.outputs}>
                     {
                         connects?.elements.outputs.map((element, index)=>(
-                            <div key={`A${element.target.level}.${element.target.subLevel}-key-output-${index}`}>
-                                <p className={s.output} id={`A${element.target.level}.${element.target.subLevel}-output-${index}`}>{element.name}</p>
+                            <div key={`A${element.target.level}-key-output-${index}`}>
+                                <p className={s.output} id={`A${element.target.level}-output-${index}`}>{element.name}</p>
                                 <Xarrow
                                     startAnchor="right"
                                     endAnchor="left"
-                                    start={`A${element.target.level}.${element.target.subLevel}`}
-                                    end={`A${element.target.level}.${element.target.subLevel}-output-${index}`}
+                                    start={`A${element.target.level}`}
+                                    end={`A${element.target.level}-output-${index}`}
                                     color="black"
                                     strokeWidth={2}
                                     gridBreak="70%"
@@ -157,15 +163,15 @@ export const DiagramBlocks = ({diagram}:{diagram:Diagram}) => {
                     connects?.elements.controls.map((element, index)=>{
                         
                         if(element.targets){
-                            return <div key={`A${element.target.level}.${element.target.subLevel}-key-controls-${index}`}  id={`controls-${element.name}`}>
+                            return <div key={`A${element.target.level}-key-controls-${index}`}  id={`controls-${element.name}`}>
                                 <p className={s.control}>{element.name}</p>
                                 {element.targets.map((target:Block, ind:number) => 
-                                    <div key={`A${target.level}.${target.subLevel}-key-controls-${index}-${ind}`}>
+                                    <div key={`A${target.level}-key-controls-${index}-${ind}`}>
                                         <Xarrow
                                             startAnchor="top"
                                             endAnchor="bottom"
                                             start={`controls-${element.name}`}
-                                            end={`A${target.level}.${target.subLevel}`}
+                                            end={`A${target.level}`}
                                             color="black"
                                             strokeWidth={2}
                                             gridBreak="10%" 
@@ -174,13 +180,13 @@ export const DiagramBlocks = ({diagram}:{diagram:Diagram}) => {
                                     </div>)
                                 }
                             </div>
-                        } else return <div key={`A${element.target.level}.${element.target.subLevel}-key-controls-${index}`} id={`A${element.target.level}.${element.target.subLevel}-controls-${element.name}`}>
+                        } else return <div key={`A${element.target.level}-key-controls-${index}`} id={`A${element.target.level}-controls-${element.name}`}>
                             <p className={s.control}>{element.name}</p>
                             <Xarrow
                                 startAnchor="top"
                                 endAnchor="bottom"
-                                start={`A${element.target.level}.${element.target.subLevel}-controls-${element.name}`}
-                                end={`A${element.target.level}.${element.target.subLevel}`}
+                                start={`A${element.target.level}-controls-${element.name}`}
+                                end={`A${element.target.level}`}
                                 color="black"
                                 strokeWidth={2}
                                 gridBreak="10%" 
@@ -198,8 +204,8 @@ export const DiagramBlocks = ({diagram}:{diagram:Diagram}) => {
                             <Xarrow
                                 startAnchor="right"
                                 endAnchor="left"
-                                start={`A${line.a.level}.${line.a.subLevel}`}
-                                end={`A${line.b.level}.${line.b.subLevel}`}
+                                start={`A${line.a.level}`}
+                                end={`A${line.b.level}`}
                                 color="black"
                                 strokeWidth={2}
                                 gridBreak="20px" 
