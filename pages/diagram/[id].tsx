@@ -27,7 +27,6 @@ export default function Diagram() {
     
     const [isRedactoring, setIsRedactoring] = useState(false);
     const [currentDiagram,setCurrentDiagram] = useState<Diagram|null>(null)
-    const [topLevels, setTopLevels] = useState<string[]>([])
 
     const [isTree, setIsTree] = useState(true)
 
@@ -38,11 +37,6 @@ export default function Diagram() {
             if(!diagram) return
 
             setCurrentDiagram(diagram)
-
-            const uniqLevels: Set<string> = new Set()
-            diagram?.blocks.forEach(block=> uniqLevels.add(block.level))
-
-            setTopLevels(Array.from(uniqLevels))
         }
     },[router, diagrams])
 
